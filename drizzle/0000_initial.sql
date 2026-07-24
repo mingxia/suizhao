@@ -1,0 +1,11 @@
+CREATE TABLE `user` (`id` text PRIMARY KEY NOT NULL, `name` text NOT NULL, `email` text NOT NULL, `email_verified` integer DEFAULT false NOT NULL, `image` text, `created_at` integer NOT NULL, `updated_at` integer NOT NULL);
+CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);
+CREATE TABLE `session` (`id` text PRIMARY KEY NOT NULL, `expires_at` integer NOT NULL, `token` text NOT NULL, `created_at` integer NOT NULL, `updated_at` integer NOT NULL, `ip_address` text, `user_agent` text, `user_id` text NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade);
+CREATE UNIQUE INDEX `session_token_unique` ON `session` (`token`);
+CREATE TABLE `account` (`id` text PRIMARY KEY NOT NULL, `account_id` text NOT NULL, `provider_id` text NOT NULL, `user_id` text NOT NULL, `access_token` text, `refresh_token` text, `id_token` text, `access_token_expires_at` integer, `refresh_token_expires_at` integer, `scope` text, `password` text, `created_at` integer NOT NULL, `updated_at` integer NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade);
+CREATE TABLE `verification` (`id` text PRIMARY KEY NOT NULL, `identifier` text NOT NULL, `value` text NOT NULL, `expires_at` integer NOT NULL, `created_at` integer, `updated_at` integer);
+CREATE TABLE `persons` (`id` text PRIMARY KEY NOT NULL, `owner_id` text NOT NULL, `name` text NOT NULL, `nickname` text, `birthday` integer NOT NULL, `cover_key` text, `privacy` text DEFAULT 'private' NOT NULL, `created_at` integer NOT NULL, `updated_at` integer NOT NULL, FOREIGN KEY (`owner_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade);
+CREATE INDEX `persons_owner_id_idx` ON `persons` (`owner_id`);
+CREATE TABLE `year_photos` (`id` text PRIMARY KEY NOT NULL, `person_id` text NOT NULL, `age` integer NOT NULL, `year` integer NOT NULL, `thumbnail_key` text NOT NULL, `large_key` text NOT NULL, `mime_type` text NOT NULL, `width` integer, `height` integer, `note` text, `taken_at` integer, `created_at` integer NOT NULL, `updated_at` integer NOT NULL, FOREIGN KEY (`person_id`) REFERENCES `persons`(`id`) ON UPDATE no action ON DELETE cascade);
+CREATE UNIQUE INDEX `year_photos_person_age_unique` ON `year_photos` (`person_id`,`age`);
+CREATE INDEX `year_photos_person_id_idx` ON `year_photos` (`person_id`);
