@@ -1,12 +1,20 @@
 import Link from "next/link";
 
-const years = [
-  { age: "1岁", year: "2020", image: "/images/home/hero01.webp" },
-  { age: "2岁", year: "2021", image: "/images/home/hero02.webp" },
-  { age: "3岁", year: "2022", image: "/images/home/hero03.webp" },
-  { age: "4岁", year: "2023", image: "/images/home/hero04.webp" },
-  { age: "5岁", year: "2024", image: "/images/home/hero05.webp" },
-];
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 5 }, (_, index) => ({
+  age: `${index + 1}岁`,
+  year: String(currentYear - 5 + index),
+  image: `/images/home/hero0${index + 1}.webp`,
+}));
+
+function FeatureIcon({ type }: { type: "camera" | "lock" | "clock" }) {
+  const paths = {
+    camera: <><path d="M4 8h3l1.3-2h7.4L17 8h3v10H4z" /><circle cx="12" cy="13" r="3.5" /></>,
+    lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
+    clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v6l4 2" /></>,
+  };
+  return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[type]}</svg>;
+}
 
 function FeatureIcon({ type }: { type: "camera" | "lock" | "clock" }) {
   const paths = {
@@ -56,7 +64,7 @@ export default function Home() {
                   </article>
                 ))}
                 <article className="year-card pending">
-                  <strong>6岁</strong><small>2025</small>
+                  <strong>6岁</strong><small>{currentYear}</small>
                   <div className="add-photo"><b>＋</b><span>待记录</span></div>
                 </article>
               </div>
