@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function Home() { return <main className="container"><nav style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><h1>岁照</h1><Link className="btn" href="/dashboard">开始记录</Link></nav><section className="card" style={{marginTop:40,padding:48}}><p className="muted">极简个人成长记录</p><h2 style={{fontSize:48}}>每岁一张，照见成长。</h2><p className="muted" style={{fontSize:22}}>一年只留一张照片，<br/>慢慢看见一个人的一生。</p></section></main>; }

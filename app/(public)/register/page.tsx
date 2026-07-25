@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function RegisterPage(){return <main className="container"><div className="card" style={{maxWidth:420,margin:"60px auto",padding:32}}><h1>注册</h1><form><input name="name" placeholder="姓名"/><input name="email" placeholder="邮箱"/><input name="password" type="password" placeholder="密码"/><button className="btn">注册</button></form><p><Link href="/login">已有账号</Link></p></div></main>}
