@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { getSession } from "@/lib/session";
 
 const years = [
   { age: "1岁", year: "2020", tone: "baby" },
@@ -9,18 +8,15 @@ const years = [
   { age: "5岁", year: "2024", tone: "field" },
 ];
 
-export default async function Home() {
-  const session = await getSession();
-  const startHref = session ? "/dashboard" : "/register";
-
+export default function Home() {
   return (
     <main className="landing-page">
       <header className="landing-nav">
         <Link className="wordmark" href="/">岁照</Link>
         <nav aria-label="主导航">
           <Link className="nav-active" href="/">首页</Link>
-          <Link href={session ? "/dashboard" : "/login"}>{session ? "我的" : "登录"}</Link>
-          <Link className="btn btn-large" href={startHref}>开始记录</Link>
+          <Link href="/login">登录</Link>
+          <Link className="btn btn-large" href="/register">开始记录</Link>
         </nav>
       </header>
 
@@ -31,7 +27,7 @@ export default async function Home() {
           <span className="title-rule" />
           <p className="hero-description">一年只留一张照片，<br />慢慢看见一个人的一生。</p>
           <div className="hero-actions">
-            <Link className="btn btn-primary" href={startHref}>开始记录</Link>
+            <Link className="btn btn-primary" href="/register">开始记录</Link>
             <a className="btn btn-secondary" href="#example">查看示例 <span aria-hidden>›</span></a>
           </div>
         </div>
