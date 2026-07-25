@@ -5,7 +5,7 @@
   "compatibility_date": "2026-07-24",
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
-  "d1_databases": [{ "binding": "DB", "database_name": "suizhao-db", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "drizzle" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "suizhao-db", "database_id": "e42aa042-1d42-4efd-a3f8-4836c7e6b89b", "migrations_dir": "drizzle" }],
   "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "suizhao-photos" }],
-  "vars": { "BETTER_AUTH_URL": "https://example.com" }
+  "vars": { "BETTER_AUTH_URL": "https://suizhao.byte.day" }
 }
