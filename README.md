@@ -107,6 +107,14 @@ pnpm deploy
 
 部署后执行注册、登录、创建人物、上传照片、读取照片、替换照片、删除人物冒烟测试。
 
+Cloudflare 的构建环境可能只安装生产依赖，因此 Next.js 构建阶段必需的
+`typescript`、`@types/node`、`@types/react` 和 `@types/react-dom` 保留在
+`dependencies` 中。Cloudflare Workers Builds 的构建命令应设置为
+`pnpm cf:build`；不要在构建环境中使用 `pnpm install --prod` 后再手动删除这些依赖。
+仓库暂未提交 lockfile，Cloudflare 可能先使用 npm 安装依赖；`.npmrc` 允许 npm
+忽略 Better Auth 可选的 Lynx React peer dependency 冲突，避免依赖安装提前失败、
+随后在 Next.js 阶段误报未安装 TypeScript。
+
 ## 图片隐私机制
 
 图片不进入 `public` 目录，D1 只保存 R2 object key 和元数据，不保存二进制或永久公开 URL。R2 Bucket 保持私有；年龄照片通过 `/api/photos/[photoId]/file?variant=thumbnail|large` 读取，人物封面通过 `/api/persons/[personId]/cover` 读取。每次读取都验证真实 Session 和人物所有权，并返回 `Cache-Control: private` 与 `X-Content-Type-Options: nosniff`。
