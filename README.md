@@ -111,6 +111,9 @@ Cloudflare 的构建环境可能只安装生产依赖，因此 Next.js 构建阶
 `typescript`、`@types/node`、`@types/react` 和 `@types/react-dom` 保留在
 `dependencies` 中。Cloudflare Workers Builds 的构建命令应设置为
 `pnpm cf:build`；不要在构建环境中使用 `pnpm install --prod` 后再手动删除这些依赖。
+仓库暂未提交 lockfile，Cloudflare 可能先使用 npm 安装依赖；`.npmrc` 允许 npm
+忽略 Better Auth 可选的 Lynx React peer dependency 冲突，避免依赖安装提前失败、
+随后在 Next.js 阶段误报未安装 TypeScript。
 
 ## 图片隐私机制
 
