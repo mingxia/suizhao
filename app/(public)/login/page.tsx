@@ -1,2 +1,6 @@
 import Link from "next/link";
-export default function LoginPage(){return <main className="container"><div className="card" style={{maxWidth:420,margin:"60px auto",padding:32}}><h1>登录</h1><form><input name="email" placeholder="邮箱"/><input name="password" type="password" placeholder="密码"/><button className="btn">登录</button></form><p><Link href="/register">注册账号</Link></p></div></main>}
+import { AuthForm } from "./auth-form";
+
+export default function LoginPage() {
+  return <main className="auth-page"><Link className="wordmark auth-logo" href="/">岁照</Link><section className="auth-card"><p className="eyebrow">欢迎回来</p><h1>登录岁照</h1><p className="muted">继续保存属于你的成长时光。</p><AuthForm mode="login" /><p className="auth-switch">还没有账号？<Link href="/register">免费注册</Link></p></section></main>;
+}
