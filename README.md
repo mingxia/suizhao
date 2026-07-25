@@ -109,11 +109,13 @@ pnpm deploy
 
 Cloudflare 的构建环境可能只安装生产依赖，因此 Next.js 构建阶段必需的
 `typescript`、`@types/node`、`@types/react` 和 `@types/react-dom` 保留在
-`dependencies` 中。Cloudflare Workers Builds 控制台里的 **Build command** 必须设置为
-`pnpm cf:build`，不能设置为 `pnpm build`。OpenNext 构建器会在内部调用项目的
-`pnpm build` 来执行 `next build`；如果项目的 `build` 脚本也指向 OpenNext，就会不断
-递归启动 OpenNext 构建。`pnpm cf:build` 会在 Next.js 构建完成后生成后续
-`npx wrangler deploy` 所需的 `.open-next` Worker、静态资源和编译配置。
+`dependencies` 中。Cloudflare Workers Builds 控制台里的 **Build command** 设置为 `pnpm build`（保留旧配置
+`pnpm cf:build` 也可以），**Deploy command** 设置为 `pnpm exec opennextjs-cloudflare deploy`。
+项目的 `build` 脚本会执行完整的 OpenNext 构建，并生成部署阶段所需的 `.open-next`
+Worker、静态资源和 `.open-next/.build/open-next.config.edge.mjs` 编译配置；仅执行
+`next build` 会导致部署时报 “Could not find compiled Open Next config”。OpenNext 构建器
+通过 `open-next.config.ts` 中的 `buildCommand` 调用 `pnpm next:build` 来构建 Next.js，
+从而避免递归启动 OpenNext。
 不要在构建环境中使用 `pnpm install --prod` 后再手动删除这些依赖。
 `pnpm-lock.yaml` 已提交，Cloudflare 应使用锁定版本安装依赖。TypeScript 固定在
 Next.js 当前可加载的 5.9.x；不要改回 `latest`，因为 TypeScript 7 的 npm 包不再
