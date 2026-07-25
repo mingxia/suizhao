@@ -127,6 +127,11 @@ Next.js 当前可加载的 5.9.x；不要改回 `latest`，因为 TypeScript 7 �
 
 图片不进入 `public` 目录，D1 只保存 R2 object key 和元数据，不保存二进制或永久公开 URL。R2 Bucket 保持私有；年龄照片通过 `/api/photos/[photoId]/file?variant=thumbnail|large` 读取，人物封面通过 `/api/persons/[personId]/cover` 读取。每次读取都验证真实 Session 和人物所有权，并返回 `Cache-Control: private` 与 `X-Content-Type-Options: nosniff`。
 
+首页使用的公开示例图不属于用户上传内容。请将六张首页素材放在项目根目录下的
+`public/images/home/`（与 `app/` 同级），**不是** `app/(public)/`。依次命名为
+`hero01.webp` 至 `hero06.webp`。这些文件在页面中的公开访问路径对应
+`/images/home/hero01.webp` 至 `/images/home/hero06.webp`。
+
 ## 删除和补偿机制
 
 D1 与 R2 没有跨服务事务。上传时先写新 R2 对象，再写 D1；D1 失败会删除新对象。替换时 D1 更新成功后再删除旧对象，旧对象删除失败只记录结构化日志，不回滚新照片。删除人物或照片时先删除 D1 记录，再补偿清理相关 R2 对象。
