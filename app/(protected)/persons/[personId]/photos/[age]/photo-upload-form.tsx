@@ -19,7 +19,7 @@ async function resizeToWebp(file: File, maxEdge: number, quality: number) {
   return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
 }
 
-export function PhotoUploadForm({ personId, age, replacing }: { personId: string; age: number; replacing: boolean }) {
+export function PhotoUploadForm({ personId, age, replacing, onSuccess }: { personId: string; age: number; replacing: boolean; onSuccess?: () => void }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -52,6 +52,7 @@ export function PhotoUploadForm({ personId, age, replacing }: { personId: string
       if (!response.ok) throw new Error(result.message || "上传失败，请重新尝试。");
       setMessage("保存成功。");
       router.refresh();
+      onSuccess?.();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "上传失败，请重新尝试。");
     } finally {
