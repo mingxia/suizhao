@@ -1,8 +1,41 @@
-import Link from "next/link";
 import { asc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { yearPhotos } from "@/db/schema";
 import { getAvailableAges, getCurrentAge, getYearForAge } from "@/lib/age";
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
-export default async function PersonPage({params}:{params:Promise<{personId:string}>}){const {personId}=await params;const s=await requireSession();const person=await requirePersonOwner(personId,s.user.id);const photos=await (await getDb()).select().from(yearPhotos).where(eq(yearPhotos.personId,personId)).orderBy(asc(yearPhotos.age));const byAge=new Map(photos.map(p=>[p.age,p]));const ages=getAvailableAges(person.birthday);const currentAge=getCurrentAge(person.birthday);return <main className="container"><section className="card" style={{padding:32,display:"flex",justifyContent:"space-between",gap:24}}><div><h1 style={{fontSize:42}}>{person.name}</h1><p>{person.birthday.getUTCFullYear()}年出生 · {currentAge}岁</p><p className="muted">已记录{photos.length}年</p></div><div><h2>每岁一张，照见成长。</h2><p className="muted">一年只留一张照片，慢慢看见一个人的一生。</p><Link href={`/persons/${personId}/settings`}>设置</Link></div></section><section className="grid" style={{marginTop:28}}>{ages.length===0&&<p>1岁照片将在第一个生日后解锁。</p>}{ages.map(age=>{const p=byAge.get(age);return <Link key={age} href={`/persons/${personId}/photos/${age}`} className="card" style={{overflow:"hidden",textDecoration:"none",color:"inherit"}}>{p?<img src={`/api/photos/${p.id}/file?variant=thumbnail`} alt={`${person.name}${age}岁的照片`} loading="lazy" style={{width:"100%",aspectRatio:"3/4",objectFit:"cover"}}/>:<div style={{aspectRatio:"3/4",display:"grid",placeItems:"center",border:"1px dashed var(--border)"}}>＋<br/>添加这一岁的照片</div>}<p style={{padding:"0 18px 14px"}}>{age}岁 / <span className="muted">{getYearForAge(person.birthday,age)}</span></p></Link>})}<div className="card" style={{aspectRatio:"3/4",display:"grid",placeItems:"center",color:"var(--muted)"}}>🔒<br/>{currentAge+1}岁<br/>生日后解锁</div></section></main>}
+import { PersonYears } from "./person-years";
+
+export default async function PersonPage({ params }: { params: Promise<{ personId: string }> }) {
+  const { personId } = await params;
+  const session = await requireSession();
+  const person = await requirePersonOwner(personId, session.user.id);
+  const photos = await (await getDb()).select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.age));
+  const ages = getAvailableAges(person.birthday);
+  const currentAge = getCurrentAge(person.birthday);
+  const cards = ages.map((age) => {
+    const photo = photos.find((item) => item.age === age);
+    return { age, year: getYearForAge(person.birthday, age), photoId: photo?.id ?? null };
+  });
+
+  return <main className="container person-page">
+    <section className="person-hero card">
+      {person.coverKey
+        ? <img className="person-cover" src={`/api/persons/${personId}/cover`} alt={`${person.name}的封面`} />
+        : <div className="person-cover person-cover-placeholder" role="img" aria-label="尚未上传封面图"><span className="placeholder-sun" /><span className="placeholder-hills" /><span className="placeholder-tree">♧</span><small>留住每一岁的光影</small></div>}
+      <div className="person-summary">
+        <h1>{person.name}</h1>
+        <p>{person.birthday.getUTCFullYear()}年出生 · {currentAge}岁</p>
+        <span>已记录{photos.length}年</span>
+      </div>
+      <div className="person-intro">
+        <h2>每岁一张，照见成长。</h2>
+        <p>一年只留一张照片，慢慢看见一个人的一生。</p>
+        <a href={`/persons/${personId}/settings`}>人物设置 →</a>
+      </div>
+    </section>
+    {ages.length === 0
+      ? <p className="empty-years">1岁照片将在第一个生日后解锁。</p>
+      : <PersonYears personId={personId} personName={person.name} cards={cards} nextAge={currentAge + 1} />}
+  </main>;
+}
