@@ -1,4 +1,6 @@
-const ITERATIONS = 210_000;
+// Cloudflare Workers' Web Crypto implementation caps PBKDF2 at 100,000
+// iterations. Going above that makes sign-up fail while hashing the password.
+const ITERATIONS = 100_000;
 const KEY_LENGTH = 32;
 const ALGORITHM = "pbkdf2-sha256";
 
