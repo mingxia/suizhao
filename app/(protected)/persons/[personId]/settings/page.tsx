@@ -1,4 +1,10 @@
-import { updatePersonFromForm } from "@/actions/person-actions";
+import { redirect } from "next/navigation";
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
-export default async function Settings({params}:{params:Promise<{personId:string}>}){const {personId}=await params;const s=await requireSession();const p=await requirePersonOwner(personId,s.user.id);return <main className="container"><div className="card" style={{padding:32}}><h1>人物设置</h1><form action={updatePersonFromForm.bind(null,personId)}><input name="name" defaultValue={p.name}/><input name="nickname" defaultValue={p.nickname??""}/><input name="birthday" type="date" defaultValue={p.birthday.toISOString().slice(0,10)}/><select name="privacy" defaultValue={p.privacy}><option value="private">私有</option><option value="unlisted">私密链接（预留）</option></select><button className="btn">保存</button></form><p className="muted">删除人物时需要输入人物姓名确认；删除会补偿清理R2对象。</p></div></main>}
+
+export default async function Settings({ params }: { params: Promise<{ personId: string }> }) {
+  const { personId } = await params;
+  const session = await requireSession();
+  await requirePersonOwner(personId, session.user.id);
+  redirect(`/persons/${personId}`);
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { PersonModal } from "./person-modal";
 
 export function ProtectedNavigation() {
   const pathname = usePathname();
@@ -22,7 +23,7 @@ export function ProtectedNavigation() {
       <Link className={pathname === "/dashboard" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/dashboard">
         我的岁照
       </Link>
-      <Link className="btn header-create-button" href="/persons/new">创建人物</Link>
+      <PersonModal mode="create" className="btn header-create-button">创建人物</PersonModal>
       <button className="sign-out-button" type="button" onClick={signOut} disabled={isSigningOut}>
         {isSigningOut ? "正在退出…" : "退出登录"}
       </button>
