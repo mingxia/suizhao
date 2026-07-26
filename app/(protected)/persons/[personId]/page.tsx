@@ -27,7 +27,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   return <main className="container person-page">
     <div className="person-page-toolbar">
       <div>
-        <p className="person-page-eyebrow">我的岁照</p>
+        <p className="person-page-eyebrow">我的照见</p>
         <p className="person-page-context">每一个名字，都有一条独一无二的时间线。</p>
       </div>
       {ownedPersons.length > 1 && <details className="person-switcher">
