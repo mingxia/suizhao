@@ -19,8 +19,8 @@ export function ProtectedNavigation() {
 
   return (
     <nav className="site-navigation" aria-label="用户导航">
-      <Link className={pathname === "/dashboard" ? "nav-link nav-link-active" : "nav-link"} href="/dashboard">
-        我的成长
+      <Link className={pathname === "/dashboard" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/dashboard">
+        我的岁照
       </Link>
       <Link className="btn header-create-button" href="/persons/new">创建人物</Link>
       <button className="sign-out-button" type="button" onClick={signOut} disabled={isSigningOut}>

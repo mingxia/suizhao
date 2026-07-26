@@ -1,7 +1,27 @@
 import Link from "next/link";
-import { count, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 import { getDb } from "@/db";
-import { persons, yearPhotos } from "@/db/schema";
-import { getCurrentAge } from "@/lib/age";
+import { persons } from "@/db/schema";
 import { requireSession } from "@/lib/session";
-export default async function Dashboard(){const s=await requireSession();const rows=await (await getDb()).select({person:persons,photos:count(yearPhotos.id)}).from(persons).leftJoin(yearPhotos,eq(persons.id,yearPhotos.personId)).where(eq(persons.ownerId,s.user.id)).groupBy(persons.id).orderBy(desc(persons.updatedAt));return <main className="container"><h1>我的成长页面</h1>{rows.length===0?<div className="card" style={{padding:32}}><h2>创建第一个成长页面。</h2><p className="muted">从一年一张照片开始，保存时间留下的样子。</p><Link className="btn" href="/persons/new">创建人物</Link></div>:<div className="grid">{rows.map(({person,photos})=><Link className="card" style={{padding:20,textDecoration:"none",color:"inherit"}} href={`/persons/${person.id}`} key={person.id}><h2>{person.name}</h2><p className="muted">{getCurrentAge(person.birthday)}岁 · 已记录{photos}年</p></Link>)}</div>}</main>}
+
+export default async function Dashboard() {
+  const session = await requireSession();
+  const [person] = await (await getDb())
+    .select({ id: persons.id })
+    .from(persons)
+    .where(eq(persons.ownerId, session.user.id))
+    .orderBy(desc(persons.updatedAt))
+    .limit(1);
+
+  if (person) redirect(`/persons/${person.id}`);
+
+  return <main className="container dashboard-empty">
+    <p className="dashboard-eyebrow">我的岁照</p>
+    <div className="card dashboard-empty-card">
+      <h1>创建第一个人物</h1>
+      <p className="muted">从一年一张照片开始，保存时间留下的样子。</p>
+      <Link className="btn" href="/persons/new">创建人物</Link>
+    </div>
+  </main>;
+}
