@@ -16,15 +16,6 @@ function FeatureIcon({ type }: { type: "camera" | "lock" | "clock" }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[type]}</svg>;
 }
 
-function FeatureIcon({ type }: { type: "camera" | "lock" | "clock" }) {
-  const paths = {
-    camera: <><path d="M4 8h3l1.3-2h7.4L17 8h3v10H4z" /><circle cx="12" cy="13" r="3.5" /></>,
-    lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
-    clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v6l4 2" /></>,
-  };
-  return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[type]}</svg>;
-}
-
 export default function Home() {
   return (
     <main className="landing-page">
