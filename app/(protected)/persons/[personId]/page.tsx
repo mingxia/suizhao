@@ -6,6 +6,7 @@ import { getAvailableAges, getCurrentAge, getYearForAge } from "@/lib/age";
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
 import { PersonYears } from "./person-years";
+import { PersonModal } from "../../person-modal";
 
 export default async function PersonPage({ params }: { params: Promise<{ personId: string }> }) {
   const { personId } = await params;
@@ -43,7 +44,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
             <strong>{item.name}</strong>
             {item.id === personId && <small>当前</small>}
           </Link>)}
-          <Link className="person-switcher-create" href="/persons/new">＋ 创建新人物</Link>
+          <PersonModal mode="create" className="person-switcher-create">＋ 创建新人物</PersonModal>
         </div>
       </details>}
     </div>
@@ -59,7 +60,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
       <div className="person-intro">
         <h2>每岁一张，照见成长。</h2>
         <p>一年只留一张照片，慢慢看见一个人的一生。</p>
-        <a href={`/persons/${personId}/settings`}>人物设置 →</a>
+        <PersonModal mode="edit" className="person-settings-trigger" person={{ id: personId, name: person.name, nickname: person.nickname ?? "", birthday: person.birthday.toISOString().slice(0, 10), privacy: person.privacy }}>人物设置 →</PersonModal>
       </div>
     </section>
     {ages.length === 0
