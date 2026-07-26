@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { createPerson, updatePerson } from "@/actions/person-actions";
 
@@ -36,7 +37,7 @@ export function PersonModal({ mode, person, className, children }: { mode: "crea
   const title = mode === "create" ? "创建人物" : "人物设置";
   return <>
     <button type="button" className={className} onClick={() => { setError(""); setOpen(true); }}>{children}</button>
-    {open && <div className="upload-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
+    {open && createPortal(<div className="upload-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
       <section className="upload-modal person-form-modal card" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <button type="button" className="modal-close" aria-label="关闭" onClick={() => setOpen(false)}>×</button>
         <p className="modal-eyebrow">{mode === "create" ? "开启一条新的时间线" : `正在编辑 · ${person?.name}`}</p>
@@ -50,6 +51,6 @@ export function PersonModal({ mode, person, className, children }: { mode: "crea
           <div className="person-form-actions"><button type="button" className="btn-secondary modal-cancel" onClick={() => setOpen(false)}>取消</button><button className="btn" disabled={pending}>{pending ? "正在保存…" : "保存"}</button></div>
         </form>
       </section>
-    </div>}
+    </div>, document.body)}
   </>;
 }
