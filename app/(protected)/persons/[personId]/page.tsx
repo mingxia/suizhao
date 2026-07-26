@@ -1,6 +1,7 @@
-import { asc, eq } from "drizzle-orm";
+import Link from "next/link";
+import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { yearPhotos } from "@/db/schema";
+import { persons, yearPhotos } from "@/db/schema";
 import { getAvailableAges, getCurrentAge, getYearForAge } from "@/lib/age";
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
@@ -10,7 +11,11 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   const { personId } = await params;
   const session = await requireSession();
   const person = await requirePersonOwner(personId, session.user.id);
-  const photos = await (await getDb()).select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.age));
+  const db = await getDb();
+  const [photos, ownedPersons] = await Promise.all([
+    db.select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.age)),
+    db.select({ id: persons.id, name: persons.name }).from(persons).where(eq(persons.ownerId, session.user.id)).orderBy(desc(persons.updatedAt)),
+  ]);
   const ages = getAvailableAges(person.birthday);
   const currentAge = getCurrentAge(person.birthday);
   const cards = ages.map((age) => {
@@ -19,6 +24,29 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   });
 
   return <main className="container person-page">
+    <div className="person-page-toolbar">
+      <div>
+        <p className="person-page-eyebrow">我的岁照</p>
+        <p className="person-page-context">每一个名字，都有一条独一无二的时间线。</p>
+      </div>
+      {ownedPersons.length > 1 && <details className="person-switcher">
+        <summary><span>正在查看</span><strong>{person.name}</strong><i aria-hidden="true">⌄</i></summary>
+        <div className="person-switcher-menu">
+          <p>切换人物</p>
+          {ownedPersons.map((item) => <Link
+            className={item.id === personId ? "person-switcher-link person-switcher-link-active" : "person-switcher-link"}
+            href={`/persons/${item.id}`}
+            key={item.id}
+            aria-current={item.id === personId ? "page" : undefined}
+          >
+            <span>{item.name.slice(0, 1)}</span>
+            <strong>{item.name}</strong>
+            {item.id === personId && <small>当前</small>}
+          </Link>)}
+          <Link className="person-switcher-create" href="/persons/new">＋ 创建新人物</Link>
+        </div>
+      </details>}
+    </div>
     <section className="person-hero card">
       {person.coverKey
         ? <img className="person-cover" src={`/api/persons/${personId}/cover`} alt={`${person.name}的封面`} />
