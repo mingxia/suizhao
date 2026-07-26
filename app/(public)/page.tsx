@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "../logo";
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 5 }, (_, index) => ({
@@ -20,7 +21,7 @@ export default function Home() {
   return (
     <main className="landing-page">
       <header className="landing-nav">
-        <Link className="wordmark" href="/">岁照</Link>
+        <Logo className="wordmark" href="/" />
         <nav aria-label="主导航">
           <Link className="nav-active" href="/">首页</Link>
           <Link href="/login">我的</Link>
@@ -44,7 +45,7 @@ export default function Home() {
           <div className="album-frame">
             <div className="album">
               <div className="album-head">
-                <strong>岁照</strong><span>极简个人成长记录</span>
+                <strong>照见</strong><span>极简个人成长记录</span>
                 <span className="album-user" aria-label="我的">♙&nbsp; 我的</span>
               </div>
               <div className="year-strip">
@@ -76,7 +77,7 @@ export default function Home() {
         <div className="memory-copy"><span className="quote-mark">“</span><div><h2>时间会走远，照片会留下。</h2><p>当你回望，那些年的你，会在这里等你。</p><span className="title-rule" /></div></div>
         <div className="keepsake" aria-hidden="true">
           <div className="photo-stack"><div className="memory-photo" /></div>
-          <div className="book">岁照<small>我的成长记录</small></div><span className="leaf">⌁</span>
+          <div className="book">照见<small>我的成长记录</small></div><span className="leaf">⌁</span>
         </div>
       </section>
     </main>

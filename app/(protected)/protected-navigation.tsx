@@ -21,7 +21,7 @@ export function ProtectedNavigation() {
   return (
     <nav className="site-navigation" aria-label="用户导航">
       <Link className={pathname === "/dashboard" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/dashboard">
-        我的岁照
+        我的照见
       </Link>
       <PersonModal mode="create" className="btn header-create-button">创建人物</PersonModal>
       <button className="sign-out-button" type="button" onClick={signOut} disabled={isSigningOut}>

@@ -1,6 +1,6 @@
-# 岁照
+# 照见
 
-岁照是一个极简个人成长记录应用：每岁一张，照见成长。MVP 使用 Next.js App Router、OpenNext Cloudflare Adapter、Cloudflare Workers、D1、R2、Better Auth、Drizzle、Zod 与 Vitest。
+照见是一个极简个人成长记录应用：每岁一张，照见成长。MVP 使用 Next.js App Router、OpenNext Cloudflare Adapter、Cloudflare Workers、D1、R2、Better Auth、Drizzle、Zod 与 Vitest。
 
 ## 本地安装
 
