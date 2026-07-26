@@ -2,7 +2,7 @@ import Link from "next/link";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { persons, yearPhotos } from "@/db/schema";
-import { getAvailableAges, getCurrentAge, getYearForAge } from "@/lib/age";
+import { getAvailableAges, getCurrentAge, getFirstSeenYear, getYearForAge } from "@/lib/age";
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
 import { PersonYears } from "./person-years";
@@ -19,10 +19,14 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   ]);
   const ages = getAvailableAges(person.birthday);
   const currentAge = getCurrentAge(person.birthday);
-  const cards = ages.map((age) => {
-    const photo = photos.find((item) => item.age === age);
-    return { age, year: getYearForAge(person.birthday, age), photoId: photo?.id ?? null };
-  });
+  const firstSeenPhoto = photos.find((item) => item.stage === "first_seen");
+  const cards = [
+    { stage: "first_seen" as const, age: null, year: getFirstSeenYear(person.birthday), photoId: firstSeenPhoto?.id ?? null },
+    ...ages.map((age) => {
+      const photo = photos.find((item) => item.stage === "age" && item.age === age);
+      return { stage: "age" as const, age, year: getYearForAge(person.birthday, age), photoId: photo?.id ?? null };
+    }),
+  ];
 
   return <main className="container person-page">
     <div className="person-page-toolbar">
@@ -63,8 +67,6 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
         <PersonModal mode="edit" className="person-settings-trigger" person={{ id: personId, name: person.name, nickname: person.nickname ?? "", birthday: person.birthday.toISOString().slice(0, 10), privacy: person.privacy }}>人物设置 →</PersonModal>
       </div>
     </section>
-    {ages.length === 0
-      ? <p className="empty-years">1岁照片将在第一个生日后解锁。</p>
-      : <PersonYears personId={personId} personName={person.name} cards={cards} nextAge={currentAge + 1} />}
+    <PersonYears personId={personId} personName={person.name} cards={cards} nextAge={currentAge + 1} />
   </main>;
 }
