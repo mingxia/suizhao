@@ -12,5 +12,7 @@ export const persons = sqliteTable("persons", {
 
 export const yearPhotos = sqliteTable("year_photos", {
   id: text("id").primaryKey(), personId: text("person_id").notNull().references(() => persons.id, { onDelete: "cascade" }),
-  age: integer("age").notNull(), year: integer("year").notNull(), thumbnailKey: text("thumbnail_key").notNull(), largeKey: text("large_key").notNull(), mimeType: text("mime_type").notNull(), width: integer("width"), height: integer("height"), note: text("note"), takenAt: integer("taken_at", { mode: "timestamp_ms" }), createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
-}, (table) => [uniqueIndex("year_photos_person_age_unique").on(table.personId, table.age), index("year_photos_person_id_idx").on(table.personId)]);
+  stage: text("stage", { enum: ["first_seen", "age"] }).notNull().default("age"), age: integer("age"), year: integer("year").notNull(), thumbnailKey: text("thumbnail_key").notNull(), largeKey: text("large_key").notNull(), mimeType: text("mime_type").notNull(), width: integer("width"), height: integer("height"), note: text("note"), takenAt: integer("taken_at", { mode: "timestamp_ms" }), createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(), updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [uniqueIndex("year_photos_person_age_unique").on(table.personId, table.age), uniqueIndex("year_photos_person_stage_year_unique").on(table.personId, table.stage, table.year), index("year_photos_person_id_idx").on(table.personId)]);
+
+export type YearPhotoStage = "first_seen" | "age";

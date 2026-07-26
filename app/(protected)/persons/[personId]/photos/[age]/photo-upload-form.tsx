@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { containSize } from "@/lib/image-resize";
+import type { YearPhotoStage } from "@/db/schema/app";
 
 async function resizeToWebp(file: File, maxEdge: number, quality: number) {
   const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
@@ -19,7 +20,7 @@ async function resizeToWebp(file: File, maxEdge: number, quality: number) {
   return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
 }
 
-export function PhotoUploadForm({ personId, age, replacing, onSuccess }: { personId: string; age: number; replacing: boolean; onSuccess?: () => void }) {
+export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess }: { personId: string; stage: YearPhotoStage; age: number | null; replacing: boolean; onSuccess?: () => void }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -41,7 +42,8 @@ export function PhotoUploadForm({ personId, age, replacing, onSuccess }: { perso
       ]);
       const fields = new FormData(form);
       fields.delete("photo");
-      fields.set("age", String(age));
+      fields.set("stage", stage);
+      if (age === null) fields.delete("age"); else fields.set("age", String(age));
       fields.set("replace", String(replacing));
       fields.set("thumbnail", thumbnail);
       fields.set("large", large);
@@ -63,7 +65,7 @@ export function PhotoUploadForm({ personId, age, replacing, onSuccess }: { perso
   return <form onSubmit={submit} className="upload-form">
     <label>选择照片<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required disabled={busy} /></label>
     <label>拍摄日期（选填）<input name="takenAt" type="date" disabled={busy} /></label>
-    <label>这一岁的故事（选填）<textarea name="note" maxLength={50} rows={3} disabled={busy} /></label>
+    <label>{stage === "first_seen" ? "初见的故事（选填）" : "这一岁的故事（选填）"}<textarea name="note" maxLength={50} rows={3} disabled={busy} /></label>
     <button className="btn" disabled={busy}>{busy ? "请稍候…" : replacing ? "替换照片" : "保存照片"}</button>
     {message && <p role="status" aria-live="polite" className="muted">{message}</p>}
     <p className="muted upload-hint">照片只会存入私有空间；上传前会在浏览器中生成 WebP 尺寸。</p>
