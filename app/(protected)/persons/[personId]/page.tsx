@@ -8,6 +8,7 @@ import { requireSession } from "@/lib/session";
 import { PersonYears } from "./person-years";
 import { PersonModal } from "../../person-modal";
 import { WitnessPanel } from "./witness-panel";
+import { isWitnessActive } from "@/lib/witness-access";
 
 export default async function PersonPage({ params }: { params: Promise<{ personId: string }> }) {
   const { personId } = await params;
@@ -73,7 +74,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
     <PersonYears personId={personId} personName={person.name} cards={cards} nextAge={currentAge + 1} />
     <WitnessPanel personId={personId} personName={person.name} items={witnessRows.map((witness) => {
       const visit = visits.find((row) => row.witness_visits.witnessId === witness.id)?.witness_visits;
-      return { id: witness.id, name: witness.name, relation: witness.relation, permission: witness.permission, token: witness.token, lastVisitedAt: witness.lastVisitedAt?.toISOString() ?? null, viewedYears: visit ? JSON.parse(visit.viewedYears) as number[] : [] };
+      return { id: witness.id, name: witness.name, relation: witness.relation, permission: witness.permission, token: witness.token, status: isWitnessActive(witness) ? "active" as const : "paused" as const, expiresAt: witness.expiresAt?.toISOString() ?? null, lastVisitedAt: witness.lastVisitedAt?.toISOString() ?? null, viewedYears: visit ? JSON.parse(visit.viewedYears) as number[] : [] };
     })} />
   </main>;
 }

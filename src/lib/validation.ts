@@ -9,7 +9,9 @@ export const witnessSchema = z.object({
   name: z.string().trim().min(1).max(30),
   relation: z.string().trim().min(1).max(30),
   permission: z.enum(["readonly", "comment", "family"]).default("comment"),
+  duration: z.enum(["7", "30", "90", "never"]).default("30"),
 });
+export const witnessDurationSchema = z.enum(["7", "30", "90", "never"]);
 export const witnessMessageSchema = z.object({
   token: z.string().min(20).max(100),
   yearPhotoId: z.string().uuid().optional().or(z.literal("")),

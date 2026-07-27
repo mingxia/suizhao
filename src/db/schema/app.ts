@@ -25,6 +25,9 @@ export const witnesses = sqliteTable("witnesses", {
   avatar: text("avatar"),
   token: text("token").notNull().unique(),
   permission: text("permission", { enum: ["readonly", "comment", "family"] }).notNull().default("comment"),
+  status: text("status", { enum: ["active", "paused"] }).notNull().default("active"),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
+  pausedAt: integer("paused_at", { mode: "timestamp_ms" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   lastVisitedAt: integer("last_visited_at", { mode: "timestamp_ms" }),
 }, (table) => [index("witnesses_person_id_idx").on(table.personId)]);
@@ -48,3 +51,4 @@ export const witnessMessages = sqliteTable("witness_messages", {
 }, (table) => [index("witness_messages_person_id_idx").on(table.personId), index("witness_messages_photo_id_idx").on(table.yearPhotoId)]);
 
 export type WitnessPermission = "readonly" | "comment" | "family";
+export type WitnessStatus = "active" | "paused";
