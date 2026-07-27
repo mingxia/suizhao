@@ -28,7 +28,10 @@ export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess }: 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    const source = new FormData(form).get("photo");
+    // Capture all user-entered values before setting `busy`. The busy render
+    // disables the controls, and disabled controls are omitted by FormData.
+    const fields = new FormData(form);
+    const source = fields.get("photo");
     if (!(source instanceof File) || !source.size) return setMessage("请先选择一张照片。");
     if (!source.type.startsWith("image/")) return setMessage("请选择有效的图片文件。");
     if (replacing && !window.confirm("每一年只能留下一个瞬间。确定替换原来的照片吗？")) return;
@@ -40,7 +43,6 @@ export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess }: 
         resizeToWebp(source, 600, 0.78),
         resizeToWebp(source, 2000, 0.86),
       ]);
-      const fields = new FormData(form);
       fields.delete("photo");
       fields.set("stage", stage);
       if (age === null) fields.delete("age"); else fields.set("age", String(age));
