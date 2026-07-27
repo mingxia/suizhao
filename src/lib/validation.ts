@@ -5,3 +5,13 @@ export const uploadSchema = z.object({ stage: z.enum(["first_seen", "age"]).defa
   if (data.stage === "age" && data.age === undefined) context.addIssue({ code: "custom", path: ["age"], message: "年龄照片必须提供年龄" });
   if (data.stage === "first_seen" && data.age !== undefined) context.addIssue({ code: "custom", path: ["age"], message: "初见照片不使用年龄" });
 });
+export const witnessSchema = z.object({
+  name: z.string().trim().min(1).max(30),
+  relation: z.string().trim().min(1).max(30),
+  permission: z.enum(["readonly", "comment", "family"]).default("comment"),
+});
+export const witnessMessageSchema = z.object({
+  token: z.string().min(20).max(100),
+  yearPhotoId: z.string().uuid().optional().or(z.literal("")),
+  content: z.string().trim().min(1, "请写下想说的话").max(500, "祝福最多500字"),
+});
