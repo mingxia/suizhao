@@ -16,3 +16,39 @@ export const yearPhotos = sqliteTable("year_photos", {
 }, (table) => [uniqueIndex("year_photos_person_age_unique").on(table.personId, table.age), uniqueIndex("year_photos_person_stage_year_unique").on(table.personId, table.stage, table.year), index("year_photos_person_id_idx").on(table.personId)]);
 
 export type YearPhotoStage = "first_seen" | "age";
+
+export const witnesses = sqliteTable("witnesses", {
+  id: text("id").primaryKey(),
+  personId: text("person_id").notNull().references(() => persons.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  relation: text("relation").notNull(),
+  avatar: text("avatar"),
+  token: text("token").notNull().unique(),
+  permission: text("permission", { enum: ["readonly", "comment", "family"] }).notNull().default("comment"),
+  status: text("status", { enum: ["active", "paused"] }).notNull().default("active"),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }),
+  pausedAt: integer("paused_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  lastVisitedAt: integer("last_visited_at", { mode: "timestamp_ms" }),
+}, (table) => [index("witnesses_person_id_idx").on(table.personId)]);
+
+export const witnessVisits = sqliteTable("witness_visits", {
+  id: text("id").primaryKey(),
+  witnessId: text("witness_id").notNull().references(() => witnesses.id, { onDelete: "cascade" }),
+  visitedAt: integer("visited_at", { mode: "timestamp_ms" }).notNull(),
+  ip: text("ip"),
+  userAgent: text("user_agent"),
+  viewedYears: text("viewed_years").notNull().default("[]"),
+}, (table) => [index("witness_visits_witness_id_idx").on(table.witnessId)]);
+
+export const witnessMessages = sqliteTable("witness_messages", {
+  id: text("id").primaryKey(),
+  witnessId: text("witness_id").notNull().references(() => witnesses.id, { onDelete: "cascade" }),
+  personId: text("person_id").notNull().references(() => persons.id, { onDelete: "cascade" }),
+  yearPhotoId: text("year_photo_id").references(() => yearPhotos.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [index("witness_messages_person_id_idx").on(table.personId), index("witness_messages_photo_id_idx").on(table.yearPhotoId)]);
+
+export type WitnessPermission = "readonly" | "comment" | "family";
+export type WitnessStatus = "active" | "paused";

@@ -1,21 +1,25 @@
 import Link from "next/link";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { persons, yearPhotos } from "@/db/schema";
+import { persons, witnesses, witnessVisits, yearPhotos } from "@/db/schema";
 import { getAvailableAges, getCurrentAge, getFirstSeenYear, getYearForAge } from "@/lib/age";
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
 import { PersonYears } from "./person-years";
 import { PersonModal } from "../../person-modal";
+import { WitnessPanel } from "./witness-panel";
+import { isWitnessActive } from "@/lib/witness-access";
 
 export default async function PersonPage({ params }: { params: Promise<{ personId: string }> }) {
   const { personId } = await params;
   const session = await requireSession();
   const person = await requirePersonOwner(personId, session.user.id);
   const db = await getDb();
-  const [photos, ownedPersons] = await Promise.all([
+  const [photos, ownedPersons, witnessRows, visits] = await Promise.all([
     db.select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.age)),
     db.select({ id: persons.id, name: persons.name }).from(persons).where(eq(persons.ownerId, session.user.id)).orderBy(desc(persons.updatedAt)),
+    db.select().from(witnesses).where(eq(witnesses.personId, personId)).orderBy(desc(witnesses.createdAt)),
+    db.select().from(witnessVisits).innerJoin(witnesses, eq(witnessVisits.witnessId, witnesses.id)).where(eq(witnesses.personId, personId)).orderBy(desc(witnessVisits.visitedAt)),
   ]);
   const ages = getAvailableAges(person.birthday);
   const currentAge = getCurrentAge(person.birthday);
@@ -68,5 +72,9 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
       </div>
     </section>
     <PersonYears personId={personId} personName={person.name} cards={cards} nextAge={currentAge + 1} />
+    <WitnessPanel personId={personId} personName={person.name} items={witnessRows.map((witness) => {
+      const visit = visits.find((row) => row.witness_visits.witnessId === witness.id)?.witness_visits;
+      return { id: witness.id, name: witness.name, relation: witness.relation, permission: witness.permission, token: witness.token, status: isWitnessActive(witness) ? "active" as const : "paused" as const, expiresAt: witness.expiresAt?.toISOString() ?? null, lastVisitedAt: witness.lastVisitedAt?.toISOString() ?? null, viewedYears: visit ? JSON.parse(visit.viewedYears) as number[] : [] };
+    })} />
   </main>;
 }
