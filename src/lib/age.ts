@@ -3,4 +3,5 @@ function birthdayDayInYear(birthday: Date, year: number) { const { m, d } = utcP
 export function getCurrentAge(birthday: Date, now: Date = new Date()): number { const b = utcParts(birthday); const n = utcParts(now); let age = n.y - b.y; const bd = birthdayDayInYear(birthday, n.y); if (n.m < bd.m || (n.m === bd.m && n.d < bd.d)) age -= 1; return Math.max(0, age); }
 export function getYearForAge(birthday: Date, age: number): number { return birthday.getUTCFullYear() + age; }
 export function getFirstSeenYear(birthday: Date): number { return birthday.getUTCFullYear(); }
-export function getAvailableAges(birthday: Date, now: Date = new Date()): number[] { return Array.from({ length: getCurrentAge(birthday, now) }, (_, i) => i + 1); }
+export function getLatestAvailableAge(birthday: Date, now: Date = new Date()): number { return Math.max(0, now.getUTCFullYear() - birthday.getUTCFullYear()); }
+export function getAvailableAges(birthday: Date, now: Date = new Date()): number[] { return Array.from({ length: getLatestAvailableAge(birthday, now) }, (_, i) => i + 1); }
