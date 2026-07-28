@@ -77,6 +77,6 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
         </div>
       </div>
     </section>
-    <PersonYears personId={personId} personName={person.name} cards={cards} nextAge={currentAge + 1} />
+    <PersonYears personId={personId} personName={person.name} cards={cards} nextYear={new Date().getUTCFullYear() + 1} />
   </main>;
 }

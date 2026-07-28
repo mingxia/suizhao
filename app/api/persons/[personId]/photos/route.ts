@@ -1,7 +1,7 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { getDb } from "@/db";
 import { yearPhotos } from "@/db/schema";
-import { getCurrentAge, getFirstSeenYear, getYearForAge } from "@/lib/age";
+import { getFirstSeenYear, getLatestAvailableAge, getYearForAge } from "@/lib/age";
 import { validateImageFile } from "@/lib/image-signature";
 import { requirePersonOwner } from "@/lib/permissions";
 import { getPhotosBucket, yearPhotoKeys } from "@/lib/r2";
@@ -17,7 +17,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ per
   if (!parsed.success) return Response.json({ code: "INVALID_INPUT", message: "请检查上传信息" }, { status: 400 });
   const { stage } = parsed.data;
   const age = stage === "age" ? parsed.data.age! : null;
-  if (age !== null && age > getCurrentAge(person.birthday)) return Response.json({ code: "AGE_LOCKED", message: "这个年龄尚未解锁" }, { status: 400 });
+  if (age !== null && age > getLatestAvailableAge(person.birthday)) return Response.json({ code: "AGE_LOCKED", message: "这个年份尚未解锁" }, { status: 400 });
   const thumb = form.get("thumbnail"), large = form.get("large");
   if (!(thumb instanceof File) || !(large instanceof File)) return Response.json({ code: "INVALID_IMAGE", message: "请选择照片" }, { status: 400 });
   const thumbErr = await validateImageFile(thumb, 1024 * 1024);

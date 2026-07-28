@@ -10,7 +10,7 @@ type YearCard = { year: number; photoId: string | null; note: string | null; tak
   | { stage: "age"; age: number }
 );
 
-export function PersonYears({ personId, personName, cards, nextAge }: { personId: string; personName: string; cards: YearCard[]; nextAge: number }) {
+export function PersonYears({ personId, personName, cards, nextYear }: { personId: string; personName: string; cards: YearCard[]; nextYear: number }) {
   const [viewCard, setViewCard] = useState<YearCard | null>(null);
   const [uploadCard, setUploadCard] = useState<YearCard | null>(null);
   const modalOpen = viewCard !== null || uploadCard !== null;
@@ -77,7 +77,7 @@ export function PersonYears({ personId, personName, cards, nextAge }: { personId
               <YearLabel stage={card.stage} age={card.age} year={card.year} />
             </button>;
       })}
-      <div className="year-photo-card year-locked-card card"><div><span aria-hidden="true">♙</span><strong>{nextAge}岁</strong><small>生日后解锁</small></div></div>
+      <div className="year-photo-card year-locked-card card"><div><span aria-hidden="true">♙</span><strong>{nextYear}年</strong><small>待解锁</small></div></div>
     </section>
 
     {viewCard?.photoId && <div className="photo-viewer-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && closeViewer()}>
