@@ -25,10 +25,10 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   const currentAge = getCurrentAge(person.birthday);
   const firstSeenPhoto = photos.find((item) => item.stage === "first_seen");
   const cards = [
-    { stage: "first_seen" as const, age: null, year: getFirstSeenYear(person.birthday), photoId: firstSeenPhoto?.id ?? null },
+    { stage: "first_seen" as const, age: null, year: getFirstSeenYear(person.birthday), photoId: firstSeenPhoto?.id ?? null, note: firstSeenPhoto?.note ?? null, takenAt: firstSeenPhoto?.takenAt?.toISOString().slice(0, 10) ?? null },
     ...ages.map((age) => {
       const photo = photos.find((item) => item.stage === "age" && item.age === age);
-      return { stage: "age" as const, age, year: getYearForAge(person.birthday, age), photoId: photo?.id ?? null };
+      return { stage: "age" as const, age, year: getYearForAge(person.birthday, age), photoId: photo?.id ?? null, note: photo?.note ?? null, takenAt: photo?.takenAt?.toISOString().slice(0, 10) ?? null };
     }),
   ];
 

@@ -5,29 +5,70 @@ import { useEffect, useState } from "react";
 import type { YearPhotoStage } from "@/db/schema/app";
 import { PhotoUploadForm } from "./photos/[age]/photo-upload-form";
 
-type YearCard = { year: number; photoId: string | null } & (
+type YearCard = { year: number; photoId: string | null; note: string | null; takenAt: string | null } & (
   | { stage: "first_seen"; age: null }
   | { stage: "age"; age: number }
 );
 
 export function PersonYears({ personId, personName, cards, nextAge }: { personId: string; personName: string; cards: YearCard[]; nextAge: number }) {
+  const [viewCard, setViewCard] = useState<YearCard | null>(null);
   const [uploadCard, setUploadCard] = useState<YearCard | null>(null);
+  const modalOpen = viewCard !== null || uploadCard !== null;
+
   useEffect(() => {
-    if (uploadCard === null) return;
-    const close = (event: KeyboardEvent) => event.key === "Escape" && setUploadCard(null);
+    if (!modalOpen) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") uploadCard ? setUploadCard(null) : closeViewer();
+      if (!uploadCard && event.key === "ArrowLeft") moveViewer(-1);
+      if (!uploadCard && event.key === "ArrowRight") moveViewer(1);
+    };
     document.addEventListener("keydown", close);
     document.body.style.overflow = "hidden";
     return () => { document.removeEventListener("keydown", close); document.body.style.overflow = ""; };
-  }, [uploadCard]);
+  });
+
+  useEffect(() => {
+    const closeOnBack = () => setViewCard(null);
+    window.addEventListener("popstate", closeOnBack);
+    return () => window.removeEventListener("popstate", closeOnBack);
+  }, []);
+
+  function pathFor(card: YearCard) {
+    return card.stage === "first_seen" ? "first-seen" : String(card.age);
+  }
+
+  function openViewer(card: YearCard) {
+    window.history.pushState({ photoViewer: true }, "", `/persons/${personId}/photos/${pathFor(card)}`);
+    setViewCard(card);
+  }
+
+  function closeViewer() {
+    if (viewCard && window.history.state?.photoViewer) window.history.back();
+    else setViewCard(null);
+  }
+
+  function finishUpload() {
+    setUploadCard(null);
+    if (viewCard && window.history.state?.photoViewer) window.history.back();
+    else setViewCard(null);
+  }
+
+  function moveViewer(direction: -1 | 1) {
+    if (!viewCard) return;
+    const photos = cards.filter((card) => card.photoId);
+    const next = photos[photos.findIndex((card) => card.photoId === viewCard.photoId) + direction];
+    if (!next) return;
+    window.history.replaceState({ photoViewer: true }, "", `/persons/${personId}/photos/${pathFor(next)}`);
+    setViewCard(next);
+  }
 
   return <>
     <section className="years-grid">
       {cards.map((card) => {
         const key = card.stage === "first_seen" ? "first_seen" : `age-${card.age}`;
-        const path = card.stage === "first_seen" ? "first-seen" : String(card.age);
         const description = card.stage === "first_seen" ? `${personName}的初见照片` : `${personName}${card.age}岁的照片`;
         return card.photoId
-          ? <Link key={key} href={`/persons/${personId}/photos/${path}`} className="year-photo-card card">
+          ? <Link key={key} href={`/persons/${personId}/photos/${pathFor(card)}`} className="year-photo-card card" onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); openViewer(card); }}>
               <img src={`/api/photos/${card.photoId}/file?variant=thumbnail`} alt={description} loading="lazy" />
               <YearLabel stage={card.stage} age={card.age} year={card.year} />
             </Link>
@@ -38,13 +79,27 @@ export function PersonYears({ personId, personName, cards, nextAge }: { personId
       })}
       <div className="year-photo-card year-locked-card card"><div><span aria-hidden="true">♙</span><strong>{nextAge}岁</strong><small>生日后解锁</small></div></div>
     </section>
+
+    {viewCard?.photoId && <div className="photo-viewer-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && closeViewer()}>
+      <section className="photo-viewer" role="dialog" aria-modal="true" aria-labelledby="photo-viewer-title">
+        <button type="button" className="photo-viewer-close" aria-label="关闭照片" onClick={closeViewer}>×</button>
+        <button type="button" className="photo-viewer-arrow photo-viewer-previous" aria-label="上一张照片" onClick={() => moveViewer(-1)}>‹</button>
+        <div className="photo-viewer-image-wrap"><img src={`/api/photos/${viewCard.photoId}/file?variant=large`} alt={`${personName}${viewCard.stage === "first_seen" ? "的初见" : `${viewCard.age}岁`}照片`} /></div>
+        <div className="photo-viewer-caption">
+          <div><p className="modal-eyebrow">{personName} · 成长相册</p><h2 id="photo-viewer-title">{viewCard.stage === "first_seen" ? "初见" : `${viewCard.age}岁`} <span>/ {viewCard.year}</span></h2>{viewCard.note && <p className="photo-viewer-note">{viewCard.note}</p>}</div>
+          <button type="button" className="photo-manage-button" onClick={() => setUploadCard(viewCard)}>替换照片</button>
+        </div>
+        <button type="button" className="photo-viewer-arrow photo-viewer-next" aria-label="下一张照片" onClick={() => moveViewer(1)}>›</button>
+      </section>
+    </div>}
+
     {uploadCard !== null && <div className="upload-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setUploadCard(null)}>
       <section className="upload-modal card" role="dialog" aria-modal="true" aria-labelledby="upload-title">
         <button type="button" className="modal-close" aria-label="关闭" onClick={() => setUploadCard(null)}>×</button>
         <p className="modal-eyebrow">{personName} · {uploadCard.stage === "first_seen" ? "初见" : `${uploadCard.age}岁`}</p>
-        <h2 id="upload-title">{uploadCard.stage === "first_seen" ? "添加初见照片" : "添加这一岁的照片"}</h2>
-        <p className="muted">{uploadCard.stage === "first_seen" ? "选一张第一次被记录的照片，收藏相遇的起点。" : "选一张最能代表这一岁的照片，收藏此刻的故事。"}</p>
-        <PhotoUploadForm personId={personId} stage={uploadCard.stage} age={uploadCard.age} replacing={false} onSuccess={() => setUploadCard(null)} />
+        <h2 id="upload-title">{uploadCard.photoId ? "替换这张照片" : uploadCard.stage === "first_seen" ? "添加初见照片" : "添加这一岁的照片"}</h2>
+        <p className="muted">{uploadCard.photoId ? "选择新照片后，当前照片将被替换；原有日期和故事已为你保留。" : uploadCard.stage === "first_seen" ? "选一张第一次被记录的照片，收藏相遇的起点。" : "选一张最能代表这一岁的照片，收藏此刻的故事。"}</p>
+        <PhotoUploadForm personId={personId} stage={uploadCard.stage} age={uploadCard.age} replacing={Boolean(uploadCard.photoId)} defaultNote={uploadCard.note ?? ""} defaultTakenAt={uploadCard.takenAt ?? ""} onSuccess={finishUpload} />
       </section>
     </div>}
   </>;
