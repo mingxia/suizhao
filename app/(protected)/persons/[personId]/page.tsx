@@ -68,13 +68,15 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
       <div className="person-intro">
         <h2>每岁一张，照见成长。</h2>
         <p>一年只留一张照片，慢慢看见一个人的一生。</p>
-        <PersonModal mode="edit" className="person-settings-trigger" person={{ id: personId, name: person.name, nickname: person.nickname ?? "", birthday: person.birthday.toISOString().slice(0, 10), privacy: person.privacy }}>人物设置 →</PersonModal>
+        <div className="person-hero-tools">
+          <PersonModal mode="edit" className="person-settings-trigger" person={{ id: personId, name: person.name, nickname: person.nickname ?? "", birthday: person.birthday.toISOString().slice(0, 10), privacy: person.privacy }}>人物设置 →</PersonModal>
+          <WitnessPanel personId={personId} personName={person.name} visitCount={visits.length} items={witnessRows.map((witness) => {
+            const visit = visits.find((row) => row.witness_visits.witnessId === witness.id)?.witness_visits;
+            return { id: witness.id, name: witness.name, relation: witness.relation, permission: witness.permission, token: witness.token, status: isWitnessActive(witness) ? "active" as const : "paused" as const, expiresAt: witness.expiresAt?.toISOString() ?? null, lastVisitedAt: witness.lastVisitedAt?.toISOString() ?? null, viewedYears: visit ? JSON.parse(visit.viewedYears) as number[] : [] };
+          })} />
+        </div>
       </div>
     </section>
     <PersonYears personId={personId} personName={person.name} cards={cards} nextAge={currentAge + 1} />
-    <WitnessPanel personId={personId} personName={person.name} items={witnessRows.map((witness) => {
-      const visit = visits.find((row) => row.witness_visits.witnessId === witness.id)?.witness_visits;
-      return { id: witness.id, name: witness.name, relation: witness.relation, permission: witness.permission, token: witness.token, status: isWitnessActive(witness) ? "active" as const : "paused" as const, expiresAt: witness.expiresAt?.toISOString() ?? null, lastVisitedAt: witness.lastVisitedAt?.toISOString() ?? null, viewedYears: visit ? JSON.parse(visit.viewedYears) as number[] : [] };
-    })} />
   </main>;
 }
