@@ -44,3 +44,16 @@
 @media(max-width:620px){.witness-panel{padding:24px 18px}.witness-heading{align-items:flex-start;flex-direction:column}.witness-row{grid-template-columns:44px 1fr auto}.witness-copy{grid-column:2}.witness-delete{grid-column:3;grid-row:1}.witness-public-header>span{display:none}.witness-public-hero{padding:45px 18px}.witness-year{grid-template-columns:55px 1fr;gap:10px}.witness-timeline{padding:0 10px}.witness-year-marker span{font-size:18px}.witness-year-marker time{font-size:14px}.witness-memory-card blockquote,.year-message{margin-inline:12px}.witness-blessing{margin-inline:14px;padding:30px 20px}.witness-message-form>div{align-items:flex-end}.witness-message-form .btn{flex:0 0 auto}}
 .witness-main em{font-style:normal}.witness-status-active{color:#71865a}.witness-status-paused{color:#a46757}.witness-pause{padding:8px;border:0;background:transparent;color:#8c7763;font:inherit;font-size:13px;cursor:pointer}.witness-reactivate{display:flex;align-items:center;gap:7px}.witness-reactivate select,.witness-reactivate button{padding:8px;border:1px solid #d8c9b8;border-radius:8px;background:#fffdf9;color:#7d674f;font:inherit;font-size:13px}.witness-reactivate button{background:#a97849;color:white;cursor:pointer}.witness-unavailable-page{display:flex;min-height:100vh;flex-direction:column}.witness-unavailable{width:min(calc(100% - 32px),600px);margin:110px auto;padding:55px 30px;text-align:center}.witness-unavailable>span{font-size:42px;color:#b88759}.witness-unavailable h1{margin:15px 0;font-size:32px;font-weight:500}.witness-unavailable>p:last-child{color:var(--muted);line-height:1.8}.witness-unavailable-page .witness-footer{margin-top:auto}
 @media(max-width:620px){.witness-reactivate{grid-column:2/4;flex-wrap:wrap}.witness-pause{grid-column:3}.witness-unavailable{margin-block:70px;padding:42px 22px}}
+
+/* Photo-first person page: family witness lives in a supporting modal. */
+.person-hero-tools{display:flex;align-items:center;gap:22px}
+.witness-trigger{position:relative;display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:transparent;color:#90653f;font:inherit;font-size:14px;cursor:pointer}
+.witness-trigger:hover,.witness-trigger:focus-visible{color:var(--accent-dark)}
+.witness-count{position:absolute;left:calc(100% - 7px);bottom:calc(100% - 4px);min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center;border:2px solid var(--card);border-radius:10px;background:var(--danger);color:#fff;font:700 10px/1 sans-serif}
+.witness-overview-modal{width:min(100%,900px);padding:34px;overflow:auto}
+.witness-overview-modal .witness-heading{padding:2px 12px 20px}
+.witness-overview-modal .witness-list{margin-top:0}
+.witness-overview-modal .witness-empty{margin-top:0}
+.witness-invite-view{width:min(100%,520px);margin:auto}
+.witness-back{margin:0 0 22px;padding:0;border:0;background:transparent;color:#90653f;font:inherit;font-size:13px;cursor:pointer}
+@media(max-width:620px){.person-hero-tools{gap:20px;flex-wrap:wrap}.witness-overview-modal{padding:30px 18px}.witness-overview-modal .witness-heading{padding-inline:0}.witness-count{border-color:var(--card)}}

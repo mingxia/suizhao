@@ -7,22 +7,36 @@ type WitnessItem = { id: string; name: string; relation: string; permission: "re
 
 const permissionNames = { readonly: "只读分享者", comment: "普通见证者", family: "家庭成员" };
 
-export function WitnessPanel({ personId, personName, items }: { personId: string; personName: string; items: WitnessItem[] }) {
+export function WitnessPanel({ personId, personName, visitCount, items }: { personId: string; personName: string; visitCount: number; items: WitnessItem[] }) {
   const [open, setOpen] = useState(false);
+  const [inviting, setInviting] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const action = createWitness.bind(null, personId);
   const [state, formAction, pending] = useActionState<WitnessActionState, FormData>(action, {});
-  useEffect(() => { if (state.token) setOpen(true); }, [state.token]);
+  useEffect(() => { if (state.token) { setOpen(true); setInviting(true); } }, [state.token]);
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", close);
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", close); document.body.style.overflow = ""; };
+  }, [open]);
   function link(token: string) { return `${window.location.origin}/witness/${token}`; }
   async function copy(token: string) {
     await navigator.clipboard.writeText(link(token));
     setCopied(token);
     window.setTimeout(() => setCopied(null), 1800);
   }
-  return <section className="witness-panel card">
-    <div className="witness-heading">
-      <div><p className="modal-eyebrow">FAMILY WITNESS</p><h2>家人见证</h2><p>共有{items.length}位家人在见证{personName}成长</p></div>
-      <button className="btn" type="button" onClick={() => setOpen(true)}>＋ 邀请家人见证</button>
+  return <>
+    <button className="witness-trigger" type="button" onClick={() => { setInviting(false); setOpen(true); }}>
+      家人见证<span className="witness-count" aria-label={`${visitCount}人次见证`}>{visitCount}</span><span aria-hidden="true">→</span>
+    </button>
+    {open && <div className="upload-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
+      <section className="upload-modal witness-overview-modal card" role="dialog" aria-modal="true" aria-label="家人见证">
+        <button type="button" className="modal-close" aria-label="关闭" onClick={() => setOpen(false)}>×</button>
+        {!inviting ? <><div className="witness-heading">
+      <div><p className="modal-eyebrow">FAMILY WITNESS</p><h2 id="witness-overview-title">家人见证</h2><p>共有{items.length}位家人在见证{personName}成长</p></div>
+      <button className="btn" type="button" onClick={() => setInviting(true)}>＋ 邀请家人见证</button>
     </div>
     {items.length === 0 ? <div className="witness-empty"><span>♡</span><p>邀请重要的人，一起见证{personName}的成长。</p><small>家人无需注册，打开专属链接就能查看与祝福。</small></div> : <div className="witness-list">
       {items.map((item) => <article className="witness-row" key={item.id}>
@@ -34,9 +48,8 @@ export function WitnessPanel({ personId, personName, items }: { personId: string
         <form action={deleteWitness.bind(null, personId, item.id)}><button className="witness-delete" type="submit" aria-label={`移除${item.name}`}>×</button></form>
       </article>)}
     </div>}
-    {open && <div className="upload-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
-      <section className="upload-modal witness-modal card" role="dialog" aria-modal="true" aria-labelledby="witness-title">
-        <button type="button" className="modal-close" aria-label="关闭" onClick={() => setOpen(false)}>×</button>
+</> : <div className="witness-invite-view">
+          {!state.token && <button className="witness-back" type="button" onClick={() => setInviting(false)}>← 返回家人见证</button>}
         <p className="modal-eyebrow">邀请一位重要的人</p><h2 id="witness-title">一起见证{personName}的成长</h2>
         {state.token ? <div className="witness-created"><span>♡</span><h3>{state.createdName}的专属链接已生成</h3><p>无需注册，打开链接即可进入成长记录。</p><button className="btn" type="button" onClick={() => copy(state.token!)}>{copied === state.token ? "链接已复制 ✓" : "复制邀请链接"}</button><button className="text-button" type="button" onClick={() => setOpen(false)}>完成</button></div> : <form action={formAction} className="person-form">
           <label>姓名<input name="name" maxLength={30} placeholder="例如：奶奶" required /></label>
@@ -48,9 +61,11 @@ export function WitnessPanel({ personId, personName, items }: { personId: string
           {state.error && <p className="form-error">{state.error}</p>}
           <div className="person-form-actions"><button className="btn modal-cancel" type="button" onClick={() => setOpen(false)}>取消</button><button className="btn" disabled={pending}>{pending ? "正在生成…" : "生成专属链接"}</button></div>
         </form>}
+
+        </div>}
       </section>
     </div>}
-  </section>;
+  </>;
 }
 
 function formatDate(value: string) {
