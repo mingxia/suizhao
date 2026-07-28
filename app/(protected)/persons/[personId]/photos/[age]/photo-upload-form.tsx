@@ -20,7 +20,7 @@ async function resizeToWebp(file: File, maxEdge: number, quality: number) {
   return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
 }
 
-export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess }: { personId: string; stage: YearPhotoStage; age: number | null; replacing: boolean; onSuccess?: () => void }) {
+export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess, defaultNote = "", defaultTakenAt = "" }: { personId: string; stage: YearPhotoStage; age: number | null; replacing: boolean; onSuccess?: () => void; defaultNote?: string; defaultTakenAt?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -66,8 +66,8 @@ export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess }: 
 
   return <form onSubmit={submit} className="upload-form">
     <label>选择照片<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required disabled={busy} /></label>
-    <label>拍摄日期（选填）<input name="takenAt" type="date" disabled={busy} /></label>
-    <label>{stage === "first_seen" ? "初见的故事（选填）" : "这一岁的故事（选填）"}<textarea name="note" maxLength={50} rows={3} disabled={busy} /></label>
+    <label>拍摄日期（选填）<input name="takenAt" type="date" defaultValue={defaultTakenAt} disabled={busy} /></label>
+    <label>{stage === "first_seen" ? "初见的故事（选填）" : "这一岁的故事（选填）"}<textarea name="note" maxLength={50} rows={3} defaultValue={defaultNote} disabled={busy} /></label>
     <button className="btn" disabled={busy}>{busy ? "请稍候…" : replacing ? "替换照片" : "保存照片"}</button>
     {message && <p role="status" aria-live="polite" className="muted">{message}</p>}
     <p className="muted upload-hint">照片只会存入私有空间；上传前会在浏览器中生成 WebP 尺寸。</p>

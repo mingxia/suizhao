@@ -4,7 +4,7 @@ import { yearPhotos } from "@/db/schema";
 import { getFirstSeenYear, getYearForAge } from "@/lib/age";
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
-import { PhotoUploadForm } from "./photo-upload-form";
+import { PhotoReplacementModal } from "./photo-replacement-modal";
 
 export default async function PhotoDetail({ params }: { params: Promise<{ personId: string; age: string }> }) {
   const { personId, age: ageParam } = await params;
@@ -27,7 +27,6 @@ export default async function PhotoDetail({ params }: { params: Promise<{ person
       {photo.note && <p>{photo.note}</p>}
       <nav>{photos[index - 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index - 1])}`}>{adjacentLabel(photos[index - 1])}</a>} {photos[index + 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index + 1])}`}>下一岁</a>}</nav>
     </>}
-    <h2>{photo ? `替换${firstSeen ? "初见" : "这一岁"}的照片` : `添加${firstSeen ? "初见" : "这一岁"}的照片`}</h2>
-    <PhotoUploadForm personId={personId} stage={firstSeen ? "first_seen" : "age"} age={numericAge} replacing={Boolean(photo)} />
+    {photo && <PhotoReplacementModal personId={personId} stage={firstSeen ? "first_seen" : "age"} age={numericAge} note={photo.note ?? ""} takenAt={photo.takenAt?.toISOString().slice(0, 10) ?? ""} />}
   </div></main>;
 }
