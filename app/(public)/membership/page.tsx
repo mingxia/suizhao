@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "../../logo";
+import { getSession } from "@/lib/session";
+import { ProtectedNavigation } from "../../(protected)/protected-navigation";
 
 export const metadata: Metadata = { title: "会员方案｜照见", description: "选择适合你的照见会员方案。" };
 const Check = () => <span className="benefit-check" aria-hidden="true">✓</span>;
 
-export default function MembershipPage() {
+export default async function MembershipPage() {
+  const session = await getSession();
   return <main className="membership-page">
     <header className="landing-nav membership-nav">
       <Logo className="wordmark" href="/" />
-      <nav aria-label="主导航"><Link href="/">首页</Link><Link className="nav-active" href="/membership">会员</Link><Link href="/login">我的</Link></nav>
+      {session ? <ProtectedNavigation /> : <nav aria-label="主导航"><Link href="/">首页</Link><Link className="nav-active" href="/membership">会员</Link><Link className="btn btn-large" href="/login">开始记录</Link></nav>}
     </header>
     <section className="membership-hero">
       <p className="eyebrow">MEMBERSHIP</p><h1>把重要的时间，长久地留在这里</h1><p>从一条时间线开始，或为所有珍视的人持续记录。</p>
