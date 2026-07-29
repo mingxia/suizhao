@@ -18,8 +18,7 @@ export default async function MyWitnessesPage() {
   return <main className="container my-page">
     <section className="my-section">
       <div className="my-section-heading">
-        <div><p className="dashboard-eyebrow">MY ALBUMS</p><h1>我的照见</h1></div>
-        <PersonModal mode="create" className="btn">创建照见</PersonModal>
+        <div><p className="dashboard-eyebrow">我的照见</p></div>
       </div>
       {ownedPersons.length > 0 ? <div className="my-person-grid">
         {ownedPersons.map((person) => <Link className="my-person-card card" href={`/persons/${person.id}`} key={person.id}>
