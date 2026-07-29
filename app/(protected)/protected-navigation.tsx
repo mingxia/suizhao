@@ -23,7 +23,7 @@ export function ProtectedNavigation() {
       <Link className={pathname === "/dashboard" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/dashboard">
       首页
       </Link>
-      <Link className={pathname === "/my" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/my">
+      <Link className={pathname === "/my" ? "nav-link nav-link-active" : "nav-link"} href="/my">
         我的照见
       </Link>
       <PersonModal mode="create" className="btn header-create-button">创建照见</PersonModal>
