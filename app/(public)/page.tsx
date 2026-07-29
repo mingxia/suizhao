@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Logo } from "../logo";
+import { getSession } from "@/lib/session";
+import { ProtectedNavigation } from "../(protected)/protected-navigation";
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 5 }, (_, index) => ({
@@ -17,17 +19,17 @@ function FeatureIcon({ type }: { type: "camera" | "lock" | "clock" }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[type]}</svg>;
 }
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
   return (
     <main className="landing-page">
       <header className="landing-nav">
         <Logo className="wordmark" href="/" />
-        <nav aria-label="主导航">
+        {session ? <ProtectedNavigation /> : <nav aria-label="主导航">
           <Link className="nav-active" href="/">首页</Link>
           <Link href="/membership">会员</Link>
-          <Link href="/login">我的</Link>
-          <Link className="btn btn-large" href="/register">开始记录</Link>
-        </nav>
+          <Link className="btn btn-large" href="/login">开始记录</Link>
+        </nav>}
       </header>
 
       <section className="hero-panel">
