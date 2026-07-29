@@ -20,6 +20,9 @@ export function ProtectedNavigation() {
 
   return (
     <nav className="site-navigation" aria-label="用户导航">
+      <Link className={pathname === "/dashboard" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/dashboard">
+      首页
+      </Link>
       <Link className={pathname === "/my" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/my">
         我的照见
       </Link>
