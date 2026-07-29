@@ -23,6 +23,7 @@ export function ProtectedNavigation() {
       <Link className={pathname === "/dashboard" || pathname.startsWith("/persons/") && pathname !== "/persons/new" ? "nav-link nav-link-active" : "nav-link"} href="/dashboard">
         我的照见
       </Link>
+      <Link className="nav-link" href="/membership">会员</Link>
       <PersonModal mode="create" className="btn header-create-button">创建人物</PersonModal>
       <button className="sign-out-button" type="button" onClick={signOut} disabled={isSigningOut}>
         {isSigningOut ? "正在退出…" : "退出登录"}

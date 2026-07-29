@@ -24,6 +24,7 @@ export default function Home() {
         <Logo className="wordmark" href="/" />
         <nav aria-label="主导航">
           <Link className="nav-active" href="/">首页</Link>
+          <Link href="/membership">会员</Link>
           <Link href="/login">我的</Link>
           <Link className="btn btn-large" href="/register">开始记录</Link>
         </nav>
