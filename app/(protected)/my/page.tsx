@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { getDb } from "@/db";
-import { persons, user } from "@/db/schema";
+import { timelines, user } from "@/db/schema";
 import { requireSession } from "@/lib/session";
 import { PersonModal } from "../person-modal";
 import { AccountActions } from "../account-actions";
@@ -12,7 +12,7 @@ export default async function MyWitnessesPage() {
   const session = await requireSession();
   const db = await getDb();
   const [account] = await db.select({ membership: user.membership, email: user.email }).from(user).where(eq(user.id, session.user.id)).limit(1);
-  const ownedPersons = await db.select({ id: persons.id, name: persons.name, nickname: persons.nickname, updatedAt: persons.updatedAt }).from(persons).where(eq(persons.ownerId, session.user.id)).orderBy(desc(persons.updatedAt));
+  const ownedPersons = await db.select({ id: timelines.id, name: timelines.name, nickname: timelines.nickname, updatedAt: timelines.updatedAt }).from(timelines).where(eq(timelines.ownerId, session.user.id)).orderBy(desc(timelines.updatedAt));
   const membership = account?.membership ?? "free";
 
   return <main className="container my-page">
