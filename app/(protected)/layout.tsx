@@ -4,14 +4,14 @@ import { ProtectedNavigation } from "./protected-navigation";
 import { Logo } from "../logo";
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  await requireSession();
+  const session = await requireSession();
 
   return (
     <div className="protected-shell">
       <header className="site-header">
         <div className="site-header-inner">
           <Logo className="site-wordmark" href="/dashboard" />
-          <ProtectedNavigation />
+          <ProtectedNavigation isAdmin={Boolean(session.user.isAdmin)} />
         </div>
       </header>
 

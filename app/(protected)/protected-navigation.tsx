@@ -6,7 +6,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { PersonModal } from "./person-modal";
 
-export function ProtectedNavigation() {
+export function ProtectedNavigation({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -26,6 +26,9 @@ export function ProtectedNavigation() {
       <Link className={pathname === "/my" ? "nav-link nav-link-active" : "nav-link"} href="/my">
         我的照见
       </Link>
+      {isAdmin ? <Link className={pathname === "/admin" ? "nav-link nav-link-active" : "nav-link"} href="/admin">
+        系统大屏
+      </Link> : null}
       <PersonModal mode="create" className="btn header-create-button">创建照见</PersonModal>
       <button className="sign-out-button" type="button" onClick={signOut} disabled={isSigningOut}>
         {isSigningOut ? "正在退出…" : "退出登录"}
