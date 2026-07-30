@@ -6,5 +6,5 @@ import * as schema from "@/db/schema";
 import { hashPassword, verifyPassword } from "@/lib/password";
 
 export async function getAuth() {
-  return betterAuth({ database: drizzleAdapter(await getDb(), { provider: "sqlite", schema }), baseURL: process.env.BETTER_AUTH_URL, emailAndPassword: { enabled: true, password: { hash: hashPassword, verify: verifyPassword } }, user: { additionalFields: { membership: { type: "string", required: false, defaultValue: "free", input: false } } }, advanced: { database: { generateId: () => crypto.randomUUID() } }, plugins: [nextCookies()] });
+  return betterAuth({ database: drizzleAdapter(await getDb(), { provider: "sqlite", schema }), baseURL: process.env.BETTER_AUTH_URL, emailAndPassword: { enabled: true, password: { hash: hashPassword, verify: verifyPassword } }, user: { additionalFields: { membership: { type: "string", required: false, defaultValue: "free", input: false }, isAdmin: { type: "boolean", required: false, defaultValue: false, input: false } } }, advanced: { database: { generateId: () => crypto.randomUUID() } }, plugins: [nextCookies()] });
 }
