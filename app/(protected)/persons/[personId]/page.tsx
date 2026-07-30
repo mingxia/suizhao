@@ -17,7 +17,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   const db = await getDb();
   const [photos, ownedPersons, witnessRows, visits] = await Promise.all([
     db.select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.age)),
-    db.select({ id: timelines.id, name: timelines.name }).from(timelines).where(eq(timelines.ownerId, session.user.id)).orderBy(desc(timelines.updatedAt)),
+    db.select({ id: timelines.id, name: timelines.name, birthday: timelines.birthday, coverKey: timelines.coverKey, type: timelines.type }).from(timelines).where(eq(timelines.ownerId, session.user.id)).orderBy(desc(timelines.updatedAt)),
     db.select().from(witnesses).where(eq(witnesses.personId, personId)).orderBy(desc(witnesses.createdAt)),
     db.select().from(witnessVisits).innerJoin(witnesses, eq(witnessVisits.witnessId, witnesses.id)).where(eq(witnesses.personId, personId)).orderBy(desc(witnessVisits.visitedAt)),
   ]);
@@ -33,31 +33,40 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   ];
 
   return <main className="container person-page">
-    <div className="person-page-toolbar">
-      {ownedPersons.length > 1 && <details className="person-switcher">
-        <summary><span>正在查看</span><strong>{person.name}</strong><i aria-hidden="true">⌄</i></summary>
-        <div className="person-switcher-menu">
-          <p>切换照见</p>
-          {ownedPersons.map((item) => <Link
-            className={item.id === personId ? "person-switcher-link person-switcher-link-active" : "person-switcher-link"}
-            href={`/persons/${item.id}`}
-            key={item.id}
-            aria-current={item.id === personId ? "page" : undefined}
-          >
-            <span>{item.name.slice(0, 1)}</span>
-            <strong>{item.name}</strong>
-            {item.id === personId && <small>当前</small>}
-          </Link>)}
-          <PersonModal mode="create" className="person-switcher-create">＋ 创建新照见</PersonModal>
-        </div>
-      </details>}
-    </div>
     <section className="person-hero card">
       {person.coverKey
         ? <img className="person-cover" src={`/api/persons/${personId}/cover`} alt={`${person.name}的封面`} />
         : <div className="person-cover person-cover-placeholder" role="img" aria-label="尚未上传封面图"><span className="placeholder-sun" /><span className="placeholder-hills" /><span className="placeholder-tree">♧</span><small>{person.type === "family" ? "留住每一年的团圆" : "留住每一岁的光影"}</small></div>}
       <div className="person-summary">
-        <h1>{person.name}</h1>
+        <details className="timeline-switcher">
+          <summary aria-label={`选择当前照见对象，当前为${person.name}`}>
+            <h1>{person.name}</h1><i aria-hidden="true">⌄</i>
+          </summary>
+          <div className="timeline-switcher-menu">
+            <p>我的照见</p>
+            <div className="timeline-switcher-list">
+              {ownedPersons.map((item) => {
+                const itemAge = getCurrentAge(item.birthday);
+                return <Link
+                  className={item.id === personId ? "timeline-switcher-card timeline-switcher-card-active" : "timeline-switcher-card"}
+                  href={`/persons/${item.id}`}
+                  key={item.id}
+                  aria-current={item.id === personId ? "page" : undefined}
+                >
+                  {item.coverKey
+                    ? <img src={`/api/persons/${item.id}/cover`} alt="" />
+                    : <span className="timeline-switcher-thumbnail" aria-hidden="true">{item.name.slice(0, 1)}</span>}
+                  <span className="timeline-switcher-card-copy">
+                    <strong>{item.name}</strong>
+                    <small>{item.birthday.getUTCFullYear()}年{item.type === "family" ? `成婚 · 携手${itemAge}年` : `出生 · ${itemAge}岁`}</small>
+                  </span>
+                  {item.id === personId && <span className="timeline-switcher-check" aria-label="当前照见">✓</span>}
+                </Link>;
+              })}
+            </div>
+            <PersonModal mode="create" className="timeline-switcher-create">＋ 创建新的照见</PersonModal>
+          </div>
+        </details>
         <p>{person.birthday.getUTCFullYear()}年{person.type === "family" ? `成婚 · 携手${currentAge}年` : `出生 · ${currentAge}岁`}</p>
         <span>已记录{photos.length}年</span>
       </div>
