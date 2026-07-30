@@ -2,7 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getDb } from "@/db";
-import { persons, witnesses, witnessMessages, witnessVisits, yearPhotos } from "@/db/schema";
+import { timelines, witnesses, witnessMessages, witnessVisits, yearPhotos } from "@/db/schema";
 import { getCurrentAge } from "@/lib/age";
 import { Logo } from "../../../logo";
 import { WitnessMessageForm } from "./message-form";
@@ -14,7 +14,7 @@ export const metadata = { robots: { index: false, follow: false }, referrer: "no
 export default async function WitnessPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const db = await getDb();
-  const [record] = await db.select({ witness: witnesses, person: persons }).from(witnesses).innerJoin(persons, eq(witnesses.personId, persons.id)).where(eq(witnesses.token, token)).limit(1);
+  const [record] = await db.select({ witness: witnesses, person: timelines }).from(witnesses).innerJoin(timelines, eq(witnesses.personId, timelines.id)).where(eq(witnesses.token, token)).limit(1);
   if (!record) notFound();
   if (!isWitnessActive(record.witness)) return <main className="witness-page witness-unavailable-page">
     <header className="witness-public-header"><Logo href="/" /><span>照见 · 家人见证</span></header>
