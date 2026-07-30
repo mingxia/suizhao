@@ -1,6 +1,6 @@
 "use server";
 
-import { count, eq, max } from "drizzle-orm";
+import { and, count, eq, max } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/db";
 import { timelines, user, yearPhotos } from "@/db/schema";
@@ -26,6 +26,15 @@ export async function createPerson(_: unknown, formData: FormData): Promise<Acti
   if (!account) return { success: false, error: { code: "UNAUTHORIZED", message: "登录状态无效，请重新登录" } };
   if (parsed.data.type === "family" && account.membership !== "lifetime") {
     return { success: false, error: { code: "MEMBERSHIP_LIMIT", message: "只有终身会员才能创建家庭照见。" } };
+  }
+  if (parsed.data.type === "family") {
+    const [families] = await db
+      .select({ count: count(timelines.id) })
+      .from(timelines)
+      .where(and(eq(timelines.ownerId, session.user.id), eq(timelines.type, "family")));
+    if ((families?.count ?? 0) >= 1) {
+      return { success: false, error: { code: "MEMBERSHIP_LIMIT", message: "每位终身会员只能创建一个家庭照见。" } };
+    }
   }
   if (account.membership === "free" && account.timelineCount >= 1) {
     return { success: false, error: { code: "MEMBERSHIP_LIMIT", message: "免费会员只能创建一个个人照见，升级终身会员后可创建家庭照见及更多照见。" } };
