@@ -40,7 +40,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
       <div className="person-summary">
         <details className="timeline-switcher">
           <summary aria-label={`选择当前照见对象，当前为${person.name}`}>
-            <h1>{person.name}</h1><i aria-hidden="true">⌄</i>
+            <h1>{person.name}</h1><i aria-hidden="true" />
           </summary>
           <div className="timeline-switcher-menu">
             <p>我的照见</p>
