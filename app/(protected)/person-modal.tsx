@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { createPerson, updatePerson } from "@/actions/person-actions";
 import { resizeToWebp } from "@/lib/browser-image";
 
-type PersonValues = { id: string; type: "person" | "family"; name: string; nickname: string; birthday: string; privacy: "private" | "unlisted"; hasCover?: boolean };
+type AssociationOption = { id: string; name: string; nickname?: string | null };
+type PersonValues = { id: string; type: "person" | "family"; name: string; nickname: string; birthday: string; privacy: "private" | "unlisted"; hasCover?: boolean; memberIds?: string[] };
 
-export function PersonModal({ mode, person, className, children }: { mode: "create" | "edit"; person?: PersonValues; className?: string; children: React.ReactNode }) {
+export function PersonModal({ mode, person, associationOptions = [], className, children }: { mode: "create" | "edit"; person?: PersonValues; associationOptions?: AssociationOption[]; className?: string; children: React.ReactNode }) {
   const router = useRouter();
   const titleId = useId();
   const [open, setOpen] = useState(false);
@@ -16,6 +17,7 @@ export function PersonModal({ mode, person, className, children }: { mode: "crea
   const [error, setError] = useState("");
   const [type, setType] = useState<"person" | "family">(person?.type ?? "person");
   const [coverPreview, setCoverPreview] = useState("");
+  const [memberSearch, setMemberSearch] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -81,6 +83,13 @@ export function PersonModal({ mode, person, className, children }: { mode: "crea
           <label>{type === "family" ? "名称" : "姓名"}<input name="name" required maxLength={30} defaultValue={person?.name} autoFocus /></label>
           <label>昵称 <span>（选填）</span><input name="nickname" maxLength={30} defaultValue={person?.nickname} /></label>
           <label>{type === "family" ? "结婚日期" : "出生日期"}<input name="birthday" required type="date" defaultValue={person?.birthday} /></label>
+          {type === "family" && <fieldset className="family-member-fieldset">
+            <legend>关联人物 <span>（选填）</span></legend>
+            <p>关联你创建的个人照见，保存后可从家庭照见直接进入。</p>
+            {associationOptions.length ? <><input className="family-member-search" type="search" value={memberSearch} onChange={(event) => setMemberSearch(event.target.value)} placeholder="按个人照见姓名搜索" aria-label="搜索关联人物" /><div className="family-member-options">
+              {associationOptions.filter((option) => `${option.name} ${option.nickname ?? ""}`.toLocaleLowerCase().includes(memberSearch.trim().toLocaleLowerCase())).map((option) => <label key={option.id}><input type="checkbox" name="memberIds" value={option.id} defaultChecked={person?.memberIds?.includes(option.id)} /><span aria-hidden="true">{option.name.slice(0, 1)}</span><strong>{option.name}</strong>{option.nickname && <small>{option.nickname}</small>}</label>)}
+            </div></> : <small>还没有可关联的个人照见，你可以稍后在设置中添加。</small>}
+          </fieldset>}
           {mode === "edit" ? <label>可见范围<select name="privacy" defaultValue={person?.privacy}><option value="private">私有</option><option value="unlisted">私密链接（预留）</option></select></label> : <input type="hidden" name="privacy" value="private" />}
           {error && <p className="form-error" role="alert">{error}</p>}
           <div className="person-form-actions"><button type="button" className="btn-secondary modal-cancel" onClick={() => setOpen(false)}>取消</button><button className="btn" disabled={pending}>{pending ? "正在保存…" : "保存"}</button></div>
