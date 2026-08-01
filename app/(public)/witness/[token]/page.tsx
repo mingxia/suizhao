@@ -35,7 +35,7 @@ export default async function WitnessPage({ params }: { params: Promise<{ token:
   const canComment = record.witness.permission !== "readonly";
   return <main className="witness-page">
     <WitnessVisitTracker token={token} visitId={visitId} />
-    <header className="witness-public-header"><Logo href={`/witness/${token}`} /><span>一份只为你打开的成长记录</span></header>
+    <header className="witness-public-header"><Logo href="/" /><span>一份只为你打开的成长记录</span></header>
     <section className="witness-public-hero">
       <p>家人见证 · FAMILY WITNESS</p><h1>{record.person.name}的成长记录</h1>
       <div className="witness-identity"><span>{record.witness.name.slice(0, 1)}</span><strong>{record.witness.name}</strong>正在见证{record.person.name}的成长</div>
@@ -51,7 +51,7 @@ export default async function WitnessPage({ params }: { params: Promise<{ token:
             <img data-witness-year={photo.year} src={`/api/witness/${token}/photos/${photo.id}?variant=large`} alt={`${record.person.name}${photo.stage === "first_seen" ? "初见" : `${photo.age}岁`}的照片`} loading={index ? "lazy" : "eager"} />
             {photo.note && <p className="photo-note">{photo.note}</p>}
             {photoMessages.map(({ message, author }) => <blockquote key={message.id}><p>{message.content}</p><footer>来自{author}的祝福 ♡</footer></blockquote>)}
-            {canComment && <details className="year-message"><summary>写下关于这一年的记忆</summary><WitnessMessageForm token={token} yearPhotoId={photo.id} compact /></details>}
+            {canComment && <details className="year-message"><summary>看到这张照片，你想起了什么？</summary><WitnessMessageForm token={token} yearPhotoId={photo.id} compact /></details>}
           </div>
         </article>;
       })}
