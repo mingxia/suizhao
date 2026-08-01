@@ -9,8 +9,8 @@ export function WitnessMessageForm({ token, yearPhotoId, compact = false }: { to
   useEffect(() => { if (state.success) form.current?.reset(); }, [state.success]);
   return <form ref={form} action={action} className={compact ? "witness-message-form compact" : "witness-message-form"}>
     <input type="hidden" name="token" value={token} /><input type="hidden" name="yearPhotoId" value={yearPhotoId ?? ""} />
-    <textarea name="content" maxLength={500} required placeholder={yearPhotoId ? "写下关于这一年的记忆…" : "写下想对TA说的话…"} aria-label="祝福内容" />
-    <div>{state.error ? <span className="form-error">{state.error}</span> : state.success ? <span className="message-success">祝福已经留下 ♡</span> : <span />}
-      <button className="btn" disabled={pending}>{pending ? "正在保存…" : "留下祝福"}</button></div>
+    <textarea name="content" maxLength={500} required placeholder={yearPhotoId ? "说说这张照片让你想起的故事…" : "写下想对TA说的话…"} aria-label={yearPhotoId ? "关于这张照片的记忆" : "祝福内容"} />
+    <div>{state.error ? <span className="form-error">{state.error}</span> : state.success ? <span className="message-success">{yearPhotoId ? "这段记忆已经留下 ♡" : "祝福已经留下 ♡"}</span> : <span />}
+      <button className="btn" disabled={pending}>{pending ? "正在保存…" : yearPhotoId ? "留下这段记忆" : "留下祝福"}</button></div>
   </form>;
 }
