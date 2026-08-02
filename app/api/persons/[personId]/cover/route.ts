@@ -2,14 +2,14 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { timelines } from "@/db/schema";
 import { validateImageFile } from "@/lib/image-signature";
-import { requirePersonOwner } from "@/lib/permissions";
+import { requireTimelineEditor, requireTimelineViewer } from "@/lib/permissions";
 import { coverKey, getPhotosBucket } from "@/lib/r2";
 import { getSession } from "@/lib/session";
 
 export async function GET(request: Request, { params }: { params: Promise<{ personId: string }> }) {
   const session = await getSession();
   if (!session) return new Response("Unauthorized", { status: 401 });
-  const person = await requirePersonOwner((await params).personId, session.user.id);
+  const person = await requireTimelineViewer((await params).personId, session.user.id);
   if (!person.coverKey) return new Response("Not found", { status: 404 });
   const object = await (await getPhotosBucket()).get(person.coverKey, { onlyIf: { etagDoesNotMatch: request.headers.get("if-none-match") ?? undefined } });
   if (!object) return new Response("Not found", { status: 404 });
@@ -20,7 +20,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ pers
 export async function POST(request: Request, { params }: { params: Promise<{ personId: string }> }) {
   const session = await getSession();
   if (!session) return Response.json({ message: "请先登录" }, { status: 401 });
-  const person = await requirePersonOwner((await params).personId, session.user.id);
+  const person = await requireTimelineEditor((await params).personId, session.user.id);
   const cover = (await request.formData()).get("cover");
   if (!(cover instanceof File) || !cover.size) return Response.json({ message: "请选择封面图" }, { status: 400 });
   if (await validateImageFile(cover, 5 * 1024 * 1024)) return Response.json({ message: "图片格式或大小不符合要求" }, { status: 400 });

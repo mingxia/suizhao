@@ -10,7 +10,7 @@ type YearCard = { year: number; photoId: string | null; note: string | null; tak
   | { stage: "age"; age: number }
 );
 
-export function PersonYears({ personId, personName, type, cards, nextYear }: { personId: string; personName: string; type: "person" | "family"; cards: YearCard[]; nextYear: number }) {
+export function PersonYears({ personId, personName, type, cards, nextYear, canEdit = true }: { personId: string; personName: string; type: "person" | "family"; cards: YearCard[]; nextYear: number; canEdit?: boolean }) {
   const [viewCard, setViewCard] = useState<YearCard | null>(null);
   const [uploadCard, setUploadCard] = useState<YearCard | null>(null);
   const modalOpen = viewCard !== null || uploadCard !== null;
@@ -72,10 +72,10 @@ export function PersonYears({ personId, personName, type, cards, nextYear }: { p
               <img src={`/api/photos/${card.photoId}/file?variant=thumbnail`} alt={description} loading="lazy" />
               <YearLabel stage={card.stage} age={card.age} year={card.year} type={type} />
             </Link>
-          : <button key={key} type="button" className="year-photo-card year-add-card card" onClick={() => setUploadCard(card)}>
+          : canEdit ? <button key={key} type="button" className="year-photo-card year-add-card card" onClick={() => setUploadCard(card)}>
               <span className="year-add-body"><b>＋</b><span>{type === "family" ? card.stage === "first_seen" ? "添加结婚照" : "添加这一年的全家福" : card.stage === "first_seen" ? "添加初见照片" : "添加这一岁的照片"}</span></span>
               <YearLabel stage={card.stage} age={card.age} year={card.year} type={type} />
-            </button>;
+            </button> : null;
       })}
       <div className="year-photo-card year-locked-card card"><div><span aria-hidden="true">♙</span><strong>{nextYear}年</strong><small>待解锁</small></div></div>
     </section>
@@ -87,7 +87,7 @@ export function PersonYears({ personId, personName, type, cards, nextYear }: { p
         <div className="photo-viewer-image-wrap"><img src={`/api/photos/${viewCard.photoId}/file?variant=large`} alt={type === "family" ? `${personName}${viewCard.stage === "first_seen" ? "的结婚照" : "的全家福"}` : `${personName}${viewCard.stage === "first_seen" ? "的初见" : `${viewCard.age}岁`}照片`} /></div>
         <div className="photo-viewer-caption">
           <div><p className="modal-eyebrow">{personName} · {type === "family" ? "家庭相册" : "成长相册"}</p><h2 id="photo-viewer-title">{type === "family" ? viewCard.stage === "first_seen" ? "结婚照" : `第${viewCard.age}年` : viewCard.stage === "first_seen" ? "初见" : `${viewCard.age}岁`} <span>/ {viewCard.year}</span></h2>{viewCard.note && <p className="photo-viewer-note">{viewCard.note}</p>}</div>
-          <button type="button" className="photo-manage-button" onClick={() => setUploadCard(viewCard)}>替换照片</button>
+          {canEdit && <button type="button" className="photo-manage-button" onClick={() => setUploadCard(viewCard)}>替换照片</button>}
         </div>
         <button type="button" className="photo-viewer-arrow photo-viewer-next" aria-label="下一张照片" onClick={() => moveViewer(1)}>›</button>
       </section>
