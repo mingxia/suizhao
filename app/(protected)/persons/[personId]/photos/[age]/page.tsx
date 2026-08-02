@@ -2,7 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { yearPhotos } from "@/db/schema";
 import { getFirstSeenYear, getYearForAge } from "@/lib/age";
-import { requirePersonOwner } from "@/lib/permissions";
+import { requireTimelineViewer } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
 import { PhotoReplacementModal } from "./photo-replacement-modal";
 
@@ -11,7 +11,7 @@ export default async function PhotoDetail({ params }: { params: Promise<{ person
   const firstSeen = ageParam === "first-seen";
   const numericAge = firstSeen ? null : Number(ageParam);
   const session = await requireSession();
-  const person = await requirePersonOwner(personId, session.user.id);
+  const person = await requireTimelineViewer(personId, session.user.id);
   const photos = await (await getDb()).select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.year));
   const photo = photos.find((item) => firstSeen ? item.stage === "first_seen" : item.stage === "age" && item.age === numericAge);
   const index = photos.findIndex((item) => item.id === photo?.id);
@@ -27,6 +27,6 @@ export default async function PhotoDetail({ params }: { params: Promise<{ person
       {photo.note && <p>{photo.note}</p>}
       <nav>{photos[index - 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index - 1])}`}>{adjacentLabel(photos[index - 1])}</a>} {photos[index + 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index + 1])}`}>下一岁</a>}</nav>
     </>}
-    {photo && <PhotoReplacementModal personId={personId} stage={firstSeen ? "first_seen" : "age"} age={numericAge} note={photo.note ?? ""} takenAt={photo.takenAt?.toISOString().slice(0, 10) ?? ""} />}
+    {photo && person.role !== "viewer" && <PhotoReplacementModal personId={personId} stage={firstSeen ? "first_seen" : "age"} age={numericAge} note={photo.note ?? ""} takenAt={photo.takenAt?.toISOString().slice(0, 10) ?? ""} />}
   </div></main>;
 }
