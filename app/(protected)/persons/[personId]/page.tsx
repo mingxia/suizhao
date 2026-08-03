@@ -1,26 +1,32 @@
 import Link from "next/link";
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { familyMembers, timelines, witnesses, witnessVisits, yearPhotos } from "@/db/schema";
+import { familyMembers, timelineInvitations, timelineMembers, timelines, user, witnesses, witnessVisits, yearPhotos } from "@/db/schema";
 import { getAvailableAges, getCurrentAge, getFirstSeenYear, getYearForAge } from "@/lib/age";
-import { requirePersonOwner } from "@/lib/permissions";
+import { requireTimelineViewer } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
 import { PersonYears } from "./person-years";
 import { PersonModal } from "../../person-modal";
 import { WitnessPanel } from "./witness-panel";
 import { isWitnessActive } from "@/lib/witness-access";
+import { MemberPanel } from "./member-panel";
 
 export default async function PersonPage({ params }: { params: Promise<{ personId: string }> }) {
   const { personId } = await params;
   const session = await requireSession();
-  const person = await requirePersonOwner(personId, session.user.id);
+  const person = await requireTimelineViewer(personId, session.user.id);
+  const isOwner = person.role === "owner";
+  const canEdit = person.role !== "viewer";
   const db = await getDb();
-  const [photos, ownedPersons, witnessRows, visits, linkedMembers] = await Promise.all([
+  const [photos, ownedPersons, witnessRows, visits, linkedMembers, memberRows, invitationRows, owner] = await Promise.all([
     db.select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.age)),
     db.select({ id: timelines.id, name: timelines.name, birthday: timelines.birthday, coverKey: timelines.coverKey, type: timelines.type, updatedAt: timelines.updatedAt }).from(timelines).where(eq(timelines.ownerId, session.user.id)).orderBy(desc(timelines.updatedAt)),
     db.select().from(witnesses).where(eq(witnesses.personId, personId)).orderBy(desc(witnesses.createdAt)),
     db.select().from(witnessVisits).innerJoin(witnesses, eq(witnessVisits.witnessId, witnesses.id)).where(eq(witnesses.personId, personId)).orderBy(desc(witnessVisits.visitedAt)),
     db.select({ id: timelines.id, name: timelines.name }).from(familyMembers).innerJoin(timelines, eq(familyMembers.personId, timelines.id)).where(eq(familyMembers.familyId, personId)),
+    isOwner ? db.select({ id: timelineMembers.id, name: user.name, email: user.email, role: timelineMembers.role, relation: timelineMembers.relation }).from(timelineMembers).innerJoin(user, eq(user.id, timelineMembers.userId)).where(and(eq(timelineMembers.timelineId, personId), eq(timelineMembers.status, "accepted"))).orderBy(desc(timelineMembers.createdAt)) : Promise.resolve([]),
+    isOwner ? db.select({ id: timelineInvitations.id, name: user.name, email: user.email, role: timelineInvitations.role, relation: timelineInvitations.relation }).from(timelineInvitations).innerJoin(user, eq(user.id, timelineInvitations.inviteeUserId)).where(and(eq(timelineInvitations.timelineId, personId), eq(timelineInvitations.status, "pending"))).orderBy(desc(timelineInvitations.createdAt)) : Promise.resolve([]),
+    isOwner ? db.select({ name: user.name, email: user.email }).from(user).where(eq(user.id, person.ownerId)).limit(1).then((rows) => rows[0]) : Promise.resolve(undefined),
   ]);
   const ages = getAvailableAges(person.birthday);
   const currentAge = getCurrentAge(person.birthday);
@@ -76,14 +82,15 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
         <h2>{person.type === "family" ? "每年一张，照见团圆。" : "每岁一张，照见成长。"}</h2>
         <p>{person.type === "family" ? "从结婚照开始，每年留下一张全家福，看见家的变迁。" : "一年只留一张照片，慢慢看见一个人的一生。"}</p>
         <div className="person-hero-tools">
-          <PersonModal mode="edit" associationOptions={ownedPersons.filter((item) => item.type === "person")} className="person-settings-trigger" person={{ id: personId, type: person.type, name: person.name, nickname: person.nickname ?? "", birthday: person.birthday.toISOString().slice(0, 10), privacy: person.privacy, hasCover: Boolean(person.coverKey), memberIds: linkedMembers.map((member) => member.id) }}>照见设置 →</PersonModal>
-          <WitnessPanel personId={personId} personName={person.name} visitCount={visits.length} items={witnessRows.map((witness) => {
+          {isOwner && <PersonModal mode="edit" associationOptions={ownedPersons.filter((item) => item.type === "person")} className="person-settings-trigger" person={{ id: personId, type: person.type, name: person.name, nickname: person.nickname ?? "", birthday: person.birthday.toISOString().slice(0, 10), privacy: person.privacy, hasCover: Boolean(person.coverKey), memberIds: linkedMembers.map((member) => member.id) }}>照见设置 →</PersonModal>}
+          {isOwner && <WitnessPanel personId={personId} personName={person.name} visitCount={visits.length} items={witnessRows.map((witness) => {
             const visit = visits.find((row) => row.witness_visits.witnessId === witness.id)?.witness_visits;
             return { id: witness.id, name: witness.name, relation: witness.relation, permission: witness.permission, token: witness.token, status: isWitnessActive(witness) ? "active" as const : "paused" as const, expiresAt: witness.expiresAt?.toISOString() ?? null, lastVisitedAt: witness.lastVisitedAt?.toISOString() ?? null, viewedYears: visit ? JSON.parse(visit.viewedYears) as number[] : [] };
-          })} />
+          })} />}
+          {isOwner && owner && <MemberPanel personId={personId} personName={person.name} owner={owner} members={memberRows} invitations={invitationRows} />}
         </div>
       </div>
     </section>
-    <PersonYears personId={personId} personName={person.name} type={person.type} cards={cards} nextYear={new Date().getUTCFullYear() + 1} />
+    <PersonYears personId={personId} personName={person.name} type={person.type} cards={cards} nextYear={new Date().getUTCFullYear() + 1} canEdit={canEdit} />
   </main>;
 }

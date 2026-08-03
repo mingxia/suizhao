@@ -65,3 +65,57 @@ export const witnessMessages = sqliteTable("witness_messages", {
 
 export type WitnessPermission = "readonly" | "comment" | "family";
 export type WitnessStatus = "active" | "paused";
+
+export type TimelineRole = "owner" | "collaborator" | "viewer";
+export type TimelineMemberStatus = "pending" | "accepted" | "revoked";
+
+/** Registered-user relationships. Witnesses intentionally remain a separate, link-based feature. */
+export const timelineMembers = sqliteTable("timeline_members", {
+  id: text("id").primaryKey(),
+  timelineId: text("timeline_id").notNull().references(() => timelines.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  role: text("role", { enum: ["owner", "collaborator", "viewer"] }).notNull(),
+  relation: text("relation").notNull(),
+  invitedBy: text("invited_by").references(() => user.id, { onDelete: "set null" }),
+  status: text("status", { enum: ["pending", "accepted", "revoked"] }).notNull().default("accepted"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  acceptedAt: integer("accepted_at", { mode: "timestamp_ms" }),
+  revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
+}, (table) => [
+  uniqueIndex("timeline_members_timeline_user_unique").on(table.timelineId, table.userId),
+  index("timeline_members_user_status_idx").on(table.userId, table.status),
+]);
+
+export const timelineInvitations = sqliteTable("timeline_invitations", {
+  id: text("id").primaryKey(),
+  timelineId: text("timeline_id").notNull().references(() => timelines.id, { onDelete: "cascade" }),
+  inviterUserId: text("inviter_user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  inviteeUserId: text("invitee_user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  role: text("role", { enum: ["collaborator", "viewer"] }).notNull(),
+  relation: text("relation").notNull(),
+  status: text("status", { enum: ["pending", "accepted", "declined", "revoked"] }).notNull().default("pending"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  acceptedAt: integer("accepted_at", { mode: "timestamp_ms" }),
+}, (table) => [
+  uniqueIndex("timeline_invitations_pending_unique").on(table.timelineId, table.inviteeUserId, table.status),
+  index("timeline_invitations_invitee_status_idx").on(table.inviteeUserId, table.status),
+]);
+
+export const notifications = sqliteTable("notifications", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  timelineId: text("timeline_id").references(() => timelines.id, { onDelete: "cascade" }),
+  type: text("type", { enum: ["timeline_invitation", "timeline_updated"] }).notNull(),
+  content: text("content").notNull(),
+  readAt: integer("read_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [index("notifications_user_created_idx").on(table.userId, table.createdAt)]);
+
+export const timelineActivity = sqliteTable("timeline_activity", {
+  id: text("id").primaryKey(),
+  timelineId: text("timeline_id").notNull().references(() => timelines.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  action: text("action", { enum: ["upload_photo", "update_story", "delete_photo", "invite_member"] }).notNull(),
+  targetId: text("target_id"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [index("timeline_activity_timeline_created_idx").on(table.timelineId, table.createdAt)]);
