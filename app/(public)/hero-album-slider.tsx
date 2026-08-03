@@ -11,9 +11,9 @@ const personalYears = Array.from({ length: 5 }, (_, index) => ({
 const familyYears = [
   { label: "结婚", year: "2019", image: "/images/home/hero08.webp", alt: "两个人相识的合照" },
   { label: "1年", year: "2020", image: "/images/home/hero09.webp", alt: "夫妻纪念合照" },
-  { label: "2年", year: "2022", image: "/images/home/hero010.webp", alt: "一家三口的家庭照" },
-  { label: "3年", year: "2023", image: "/images/home/hero011.webp", alt: "一家人的团圆合照" },
-  { label: "5年", year: "2025", image: "/images/home/hero012.webp", alt: "全家福" },
+  { label: "2年", year: "2021", image: "/images/home/hero10.webp", alt: "一家三口的家庭照" },
+  { label: "4年", year: "2023", image: "/images/home/hero11.webp", alt: "一家人的团圆合照" },
+  { label: "6年", year: "2025", image: "/images/home/hero12.webp", alt: "全家福" },
 ];
 
 export function HeroAlbumSlider() {
