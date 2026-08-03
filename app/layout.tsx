@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { SiteFooter } from "./site-footer";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -16,4 +17,4 @@ export const metadata: Metadata = {
   },
   robots: { index: false, follow: false },
 };
-export default function RootLayout({ children }: { children: React.ReactNode }) { return <html lang="zh-CN"><body>{children}</body></html>; }
+export default function RootLayout({ children }: { children: React.ReactNode }) { return <html lang="zh-CN"><body><div className="site-content">{children}</div><SiteFooter /></body></html>; }

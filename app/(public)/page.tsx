@@ -2,19 +2,16 @@ import Link from "next/link";
 import { Logo } from "../logo";
 import { getSession } from "@/lib/session";
 import { ProtectedNavigation } from "../(protected)/protected-navigation";
+import { HeroAlbumSlider } from "./hero-album-slider";
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 5 }, (_, index) => ({
-  age: `${index + 1}岁`,
-  year: String(currentYear - 5 + index),
-  image: `/images/home/hero0${index + 1}.webp`,
-}));
-
-function FeatureIcon({ type }: { type: "camera" | "lock" | "clock" }) {
+function FeatureIcon({ type }: { type: "camera" | "lock" | "clock" | "witness" | "share" | "create" }) {
   const paths = {
     camera: <><path d="M4 8h3l1.3-2h7.4L17 8h3v10H4z" /><circle cx="12" cy="13" r="3.5" /></>,
     lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
     clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v6l4 2" /></>,
+    witness: <><circle cx="9" cy="8" r="3" /><circle cx="17" cy="10" r="2.5" /><path d="M3.5 20c.4-4 2.3-6 5.5-6s5.1 2 5.5 6M14 15c3.5-.7 5.7 1 6.5 4" /></>,
+    share: <><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6" /></>,
+    create: <><path d="M12 20h8M16 4a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z" /><path d="m14.5 5.5 3 3" /></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[type]}</svg>;
 }
@@ -44,36 +41,16 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="album-scene" id="example">
-          <div className="album-frame">
-            <div className="album">
-              <div className="album-head">
-                <strong>照见</strong><span>个人与家庭的成长档案</span>
-                <span className="album-user" aria-label="我的">♙&nbsp; 我的</span>
-              </div>
-              <div className="year-strip">
-                {years.map(({ age, year, image }) => (
-                  <article className="year-card" key={age}>
-                    <strong>{age}</strong><small>{year}</small>
-                    <div className="portrait" role="img" aria-label={`${age}成长照片`} style={{ backgroundImage: `url(${image})` }} />
-                  </article>
-                ))}
-                <article className="year-card pending">
-                  <strong>6岁</strong><small>{currentYear}</small>
-                  <div className="add-photo"><b>＋</b><span>待记录</span></div>
-                </article>
-              </div>
-              <div className="timeline">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
-              <p className="album-caption">一个人记录，一家人见证</p>
-            </div>
-          </div>
-        </div>
+        <HeroAlbumSlider />
       </section>
 
       <section className="feature-grid" aria-label="产品特点">
         <article><span className="feature-icon"><FeatureIcon type="camera" /></span><div><h2>每岁一张</h2><p>每一年，只留一个瞬间</p></div></article>
         <article><span className="feature-icon"><FeatureIcon type="lock" /></span><div><h2>私密记录</h2><p>默认私有，安静保存成长</p></div></article>
         <article><span className="feature-icon"><FeatureIcon type="clock" /></span><div><h2>时间长卷</h2><p>多年以后，一眼看见变化</p></div></article>
+        <article><span className="feature-icon"><FeatureIcon type="witness" /></span><div><h2>家人见证</h2><p>邀请亲人，一起见证每次成长</p></div></article>
+        <article><span className="feature-icon"><FeatureIcon type="share" /></span><div><h2>家人共享</h2><p>私密相聚，共享珍贵家庭记忆</p></div></article>
+        <article><span className="feature-icon"><FeatureIcon type="create" /></span><div><h2>家人共创</h2><p>共同记录，写下属于家的故事</p></div></article>
       </section>
 
       <section className="memory-panel">

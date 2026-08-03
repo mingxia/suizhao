@@ -19,7 +19,6 @@ export default async function WitnessPage({ params }: { params: Promise<{ token:
   if (!isWitnessActive(record.witness)) return <main className="witness-page witness-unavailable-page">
     <header className="witness-public-header"><Logo href="/" /><span>照见 · 家人见证</span></header>
     <section className="witness-unavailable card"><span>♡</span><p className="modal-eyebrow">FAMILY WITNESS</p><h1>这份成长记录暂时收起了</h1><p>可以联系邀请你的家人，请TA再次为你开启。</p></section>
-    <footer className="witness-footer">照见 · 每岁一张，照见成长。</footer>
   </main>;
   const [photos, messages] = await Promise.all([
     db.select().from(yearPhotos).where(eq(yearPhotos.personId, record.person.id)).orderBy(asc(yearPhotos.year), asc(yearPhotos.age)),
@@ -60,6 +59,5 @@ export default async function WitnessPage({ params }: { params: Promise<{ token:
       {messages.filter(({ message }) => !message.yearPhotoId).map(({ message, author }) => <blockquote key={message.id}><p>{message.content}</p><footer>—— {author}</footer></blockquote>)}
       {canComment ? <WitnessMessageForm token={token} /> : <p className="muted">这是一份安静的只读成长记录。</p>}
     </section>
-    <footer className="witness-footer">照见 · 每岁一张，照见成长。</footer>
   </main>;
 }
