@@ -56,3 +56,7 @@ export async function revokeTimelineMember(timelineId: string, memberId: string)
   revalidatePath(`/persons/${timelineId}/settings`);
   return { success: true, data: undefined };
 }
+
+export async function revokeTimelineMemberFromForm(timelineId: string, memberId: string): Promise<void> {
+  await revokeTimelineMember(timelineId, memberId);
+}

@@ -6,6 +6,7 @@ import { inviteTimelineMember, revokeTimelineMember } from "@/actions/member-act
 import { requirePersonOwner } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
 
+// Keep old bookmarks working; member management now shares the timeline's modal workflow.
 export default async function Settings({ params }: { params: Promise<{ personId: string }> }) {
   const { personId } = await params;
   const session = await requireSession();

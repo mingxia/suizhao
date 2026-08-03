@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { familyMembers, timelines, witnesses, witnessVisits, yearPhotos } from "@/db/schema";
+import { familyMembers, timelineInvitations, timelineMembers, timelines, user, witnesses, witnessVisits, yearPhotos } from "@/db/schema";
 import { getAvailableAges, getCurrentAge, getFirstSeenYear, getYearForAge } from "@/lib/age";
 import { requireTimelineViewer } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
@@ -9,6 +9,7 @@ import { PersonYears } from "./person-years";
 import { PersonModal } from "../../person-modal";
 import { WitnessPanel } from "./witness-panel";
 import { isWitnessActive } from "@/lib/witness-access";
+import { MemberPanel } from "./member-panel";
 
 export default async function PersonPage({ params }: { params: Promise<{ personId: string }> }) {
   const { personId } = await params;
@@ -17,12 +18,15 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
   const isOwner = person.role === "owner";
   const canEdit = person.role !== "viewer";
   const db = await getDb();
-  const [photos, ownedPersons, witnessRows, visits, linkedMembers] = await Promise.all([
+  const [photos, ownedPersons, witnessRows, visits, linkedMembers, memberRows, invitationRows, owner] = await Promise.all([
     db.select().from(yearPhotos).where(eq(yearPhotos.personId, personId)).orderBy(asc(yearPhotos.age)),
     db.select({ id: timelines.id, name: timelines.name, birthday: timelines.birthday, coverKey: timelines.coverKey, type: timelines.type, updatedAt: timelines.updatedAt }).from(timelines).where(eq(timelines.ownerId, session.user.id)).orderBy(desc(timelines.updatedAt)),
     db.select().from(witnesses).where(eq(witnesses.personId, personId)).orderBy(desc(witnesses.createdAt)),
     db.select().from(witnessVisits).innerJoin(witnesses, eq(witnessVisits.witnessId, witnesses.id)).where(eq(witnesses.personId, personId)).orderBy(desc(witnessVisits.visitedAt)),
     db.select({ id: timelines.id, name: timelines.name }).from(familyMembers).innerJoin(timelines, eq(familyMembers.personId, timelines.id)).where(eq(familyMembers.familyId, personId)),
+    isOwner ? db.select({ id: timelineMembers.id, name: user.name, email: user.email, role: timelineMembers.role, relation: timelineMembers.relation }).from(timelineMembers).innerJoin(user, eq(user.id, timelineMembers.userId)).where(and(eq(timelineMembers.timelineId, personId), eq(timelineMembers.status, "accepted"))).orderBy(desc(timelineMembers.createdAt)) : Promise.resolve([]),
+    isOwner ? db.select({ id: timelineInvitations.id, name: user.name, email: user.email, role: timelineInvitations.role, relation: timelineInvitations.relation }).from(timelineInvitations).innerJoin(user, eq(user.id, timelineInvitations.inviteeUserId)).where(and(eq(timelineInvitations.timelineId, personId), eq(timelineInvitations.status, "pending"))).orderBy(desc(timelineInvitations.createdAt)) : Promise.resolve([]),
+    isOwner ? db.select({ name: user.name, email: user.email }).from(user).where(eq(user.id, person.ownerId)).limit(1).then((rows) => rows[0]) : Promise.resolve(undefined),
   ]);
   const ages = getAvailableAges(person.birthday);
   const currentAge = getCurrentAge(person.birthday);
@@ -83,7 +87,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
             const visit = visits.find((row) => row.witness_visits.witnessId === witness.id)?.witness_visits;
             return { id: witness.id, name: witness.name, relation: witness.relation, permission: witness.permission, token: witness.token, status: isWitnessActive(witness) ? "active" as const : "paused" as const, expiresAt: witness.expiresAt?.toISOString() ?? null, lastVisitedAt: witness.lastVisitedAt?.toISOString() ?? null, viewedYears: visit ? JSON.parse(visit.viewedYears) as number[] : [] };
           })} />}
-          {isOwner && <Link className="person-settings-trigger" href={`/persons/${personId}/settings`}>管理成员 →</Link>}
+          {isOwner && owner && <MemberPanel personId={personId} personName={person.name} owner={owner} members={memberRows} invitations={invitationRows} />}
         </div>
       </div>
     </section>
