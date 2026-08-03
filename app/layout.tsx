@@ -7,7 +7,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "照见",
+  title: "照见｜一个人记录，一家人见证",
   description: "每岁一张，照见成长。",
   icons: {
     icon: [{ url: "/images/icon.png", type: "image/png" }],

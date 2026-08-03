@@ -34,10 +34,10 @@ export default async function Home() {
 
       <section className="hero-panel">
         <div className="hero-copy">
-          <p className="eyebrow">极简个人成长记录</p>
+          <p className="eyebrow">个人与家庭的成长档案</p>
           <h1>每岁一张，<br />照见成长。</h1>
           <span className="title-rule" />
-          <p className="hero-description">一年只留一张照片，<br />慢慢看见一个人的一生。</p>
+          <p className="hero-description">一年只留一张照片，<br />让家人共同见证一个人的成长。</p>
           <div className="hero-actions">
             <Link className="btn btn-primary" href="/register">开始记录</Link>
             <a className="btn btn-secondary" href="#example">查看示例 <span aria-hidden="true">›</span></a>
@@ -48,7 +48,7 @@ export default async function Home() {
           <div className="album-frame">
             <div className="album">
               <div className="album-head">
-                <strong>照见</strong><span>极简个人成长记录</span>
+                <strong>照见</strong><span>个人与家庭的成长档案</span>
                 <span className="album-user" aria-label="我的">♙&nbsp; 我的</span>
               </div>
               <div className="year-strip">
@@ -64,7 +64,7 @@ export default async function Home() {
                 </article>
               </div>
               <div className="timeline">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
-              <p className="album-caption">每岁一张，照见成长。</p>
+              <p className="album-caption">一个人记录，一家人见证</p>
             </div>
           </div>
         </div>
