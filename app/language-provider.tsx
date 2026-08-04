@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { englishTranslations } from "@/lib/english-translations";
 
 type Locale = "zh" | "en";
+const LanguageContext = createContext<{ locale: Locale; switchLocale: (next: Locale) => void } | null>(null);
 const entries = Object.entries(englishTranslations).sort(([a], [b]) => b.length - a.length);
 
 function translate(value: string) {
@@ -50,12 +51,19 @@ export function LanguageProvider({ initialLocale, children }: { initialLocale: L
     if (next === "zh") window.location.reload();
   }
 
-  return <>
-    {children}
+  return <LanguageContext.Provider value={{ locale, switchLocale }}>{children}</LanguageContext.Provider>;
+}
+
+export function LanguageSwitcher() {
+  const context = useContext(LanguageContext);
+  if (!context) return null;
+  const { locale, switchLocale } = context;
+
+  return (
     <div className="language-switcher" data-no-translate aria-label="语言 / Language">
       <button className={locale === "zh" ? "active" : ""} onClick={() => switchLocale("zh")} type="button">中文</button>
       <span>/</span>
       <button className={locale === "en" ? "active" : ""} onClick={() => switchLocale("en")} type="button">EN</button>
     </div>
-  </>;
+  );
 }

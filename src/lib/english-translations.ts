@@ -297,4 +297,8 @@ export const englishTranslations: Record<string, string> = {
   "明年": "Next year",
   "终身": "lifetime",
   "长期": "No expiry",
+  "密码": "Password",
+  "会员": "Membership",
+  "邮箱": "Email",
+  "首页": "Home",
 };

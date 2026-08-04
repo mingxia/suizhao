@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { PersonModal } from "./person-modal";
+import { LanguageSwitcher } from "../language-provider";
 
 export function ProtectedNavigation({ isAdmin = false, associationOptions = [] }: { isAdmin?: boolean; associationOptions?: { id: string; name: string; nickname: string | null }[] }) {
   const pathname = usePathname();
@@ -33,6 +34,7 @@ export function ProtectedNavigation({ isAdmin = false, associationOptions = [] }
       <button className="sign-out-button" type="button" onClick={signOut} disabled={isSigningOut}>
         {isSigningOut ? "正在退出…" : "退出登录"}
       </button>
+      <LanguageSwitcher />
     </nav>
   );
 }

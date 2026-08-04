@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Logo } from "../../logo";
 import { getSession } from "@/lib/session";
 import { ProtectedNavigation } from "../../(protected)/protected-navigation";
+import { LanguageSwitcher } from "../../language-provider";
 
 export const metadata: Metadata = { title: "会员方案｜照见", description: "选择适合你的照见会员方案。" };
 const Check = () => <span className="benefit-check" aria-hidden="true">✓</span>;
@@ -12,7 +13,7 @@ export default async function MembershipPage() {
   return <main className="membership-page">
     <header className="landing-nav membership-nav">
       <Logo className="wordmark" href="/" />
-      {session ? <ProtectedNavigation /> : <nav aria-label="主导航"><Link href="/">首页</Link><Link className="nav-active" href="/membership">会员</Link><Link className="btn btn-large" href="/login">开始记录</Link></nav>}
+      {session ? <ProtectedNavigation /> : <nav aria-label="主导航"><Link href="/">首页</Link><Link className="nav-active" href="/membership">会员</Link><Link className="btn btn-large" href="/login">开始记录</Link><LanguageSwitcher /></nav>}
     </header>
     <section className="membership-hero">
       <p className="eyebrow">MEMBERSHIP</p><h1>把重要的时间，长久地留在这里</h1><p>记录一个人的成长，也收藏一个家庭一年年的团圆。</p>
