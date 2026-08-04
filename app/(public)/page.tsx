@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "../logo";
 import { getSession } from "@/lib/session";
+import { LanguageSwitcher } from "../language-provider";
 import { ProtectedNavigation } from "../(protected)/protected-navigation";
 import { HeroAlbumSlider } from "./hero-album-slider";
 
@@ -26,6 +27,7 @@ export default async function Home() {
           <Link className="nav-active" href="/">首页</Link>
           <Link href="/membership">会员</Link>
           <Link className="btn btn-large" href="/login">开始记录</Link>
+          <LanguageSwitcher />
         </nav>}
       </header>
 
