@@ -17,7 +17,6 @@ export function PersonModal({ mode, person, associationOptions = [], className, 
   const [error, setError] = useState("");
   const [type, setType] = useState<"person" | "family">(person?.type ?? "person");
   const [coverPreview, setCoverPreview] = useState("");
-  const [coverFileName, setCoverFileName] = useState("");
   const [memberSearch, setMemberSearch] = useState("");
 
   useEffect(() => {
@@ -59,7 +58,7 @@ export function PersonModal({ mode, person, associationOptions = [], className, 
 
   const title = mode === "create" ? "创建照见" : "照见设置";
   return <>
-    <button type="button" className={className} onClick={() => { setError(""); setCoverPreview(""); setCoverFileName(""); setOpen(true); }}>{children}</button>
+    <button type="button" className={className} onClick={() => { setError(""); setCoverPreview(""); setOpen(true); }}>{children}</button>
     {open && createPortal(<div className="upload-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
       <section className="upload-modal person-form-modal card" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <button type="button" className="modal-close" aria-label="关闭" onClick={() => setOpen(false)}>×</button>
@@ -71,19 +70,14 @@ export function PersonModal({ mode, person, associationOptions = [], className, 
             <label className={type === "person" ? "timeline-type-option timeline-type-option-active" : "timeline-type-option"}><input type="radio" name="type" value="person" checked={type === "person"} onChange={() => setType("person")} /><strong>个人照见</strong><span>每岁一张，记录个人成长</span></label>
             <label className={type === "family" ? "timeline-type-option timeline-type-option-active" : "timeline-type-option"}><input type="radio" name="type" value="family" checked={type === "family"} onChange={() => setType("family")} /><strong>家庭照见</strong><span>从结婚照开始，每年一张全家福 · 终身会员</span></label>
           </fieldset> : <input type="hidden" name="type" value={person?.type} />}
-          <label className="cover-upload-field">
-            <span className="cover-upload-heading">封面图 <small>选填</small></span>
-            <span className="cover-upload-card">
-              <span className="cover-upload-preview">
+          <label className="cover-upload-field">封面图 <span>（选填，推荐横向照片）</span>
+            <span className="cover-upload-preview">
               {coverPreview || (mode === "edit" && person?.hasCover) ? <img src={coverPreview || `/api/persons/${person?.id}/cover`} alt="封面图预览" /> : <b aria-hidden="true">＋</b>}
-              </span>
-              <span className="cover-upload-copy"><strong>{coverFileName || (mode === "edit" && person?.hasCover ? "更换封面照片" : "选择一张封面照片")}</strong><small>推荐横向照片，支持 JPG、PNG、WebP</small><span className="cover-upload-button">{mode === "edit" && person?.hasCover ? "重新选择" : "选择照片"}</span></span>
             </span>
             <input name="cover" type="file" accept="image/jpeg,image/png,image/webp" disabled={pending} onChange={(event) => {
               if (coverPreview) URL.revokeObjectURL(coverPreview);
               const file = event.target.files?.[0];
               setCoverPreview(file ? URL.createObjectURL(file) : "");
-              setCoverFileName(file?.name ?? "");
             }} />
           </label>
           <label>{type === "family" ? "名称" : "姓名"}<input name="name" required maxLength={30} defaultValue={person?.name} autoFocus /></label>

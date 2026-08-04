@@ -24,7 +24,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       setPending(false);
       return;
     }
-    router.push(mode === "login" ? "/dashboard" : "/my");
+    router.push("/my");
     router.refresh();
   }
 
