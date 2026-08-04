@@ -12,6 +12,7 @@ export function Logo({ className, href }: { className?: string; href: string }) 
         width={160}
         height={64}
       />
+      <span className="english-brand-name">seeva</span>
     </Link>
   );
 }
