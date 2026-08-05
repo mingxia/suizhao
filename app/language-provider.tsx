@@ -59,11 +59,12 @@ export function LanguageSwitcher() {
   if (!context) return null;
   const { locale, switchLocale } = context;
 
+  const nextLocale = locale === "zh" ? "en" : "zh";
+  const label = locale === "zh" ? "EN" : "中文";
+
   return (
     <div className="language-switcher" data-no-translate aria-label="语言 / Language">
-      <button className={locale === "zh" ? "active" : ""} onClick={() => switchLocale("zh")} type="button">中文</button>
-      <span>/</span>
-      <button className={locale === "en" ? "active" : ""} onClick={() => switchLocale("en")} type="button">EN</button>
+      <button onClick={() => switchLocale(nextLocale)} type="button">{label}</button>
     </div>
   );
 }
