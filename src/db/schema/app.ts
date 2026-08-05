@@ -13,6 +13,29 @@ export const timelines = sqliteTable("timelines", {
 
 export type TimelineType = "person" | "family";
 
+export type OrderProduct = "lifetime_membership";
+export type OrderStatus = "pending" | "reviewing" | "approved" | "rejected" | "cancelled";
+
+export const orders = sqliteTable("orders", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  product: text("product", { enum: ["lifetime_membership"] }).notNull(),
+  status: text("status", { enum: ["pending", "reviewing", "approved", "rejected", "cancelled"] }).notNull().default("pending"),
+  amountCents: integer("amount_cents").notNull(),
+  currency: text("currency", { enum: ["CNY", "USD"] }).notNull().default("CNY"),
+  paymentMethod: text("payment_method", { enum: ["wechat_pay_qr"] }).notNull().default("wechat_pay_qr"),
+  customerName: text("customer_name").notNull(),
+  customerEmail: text("customer_email").notNull(),
+  adminNote: text("admin_note"),
+  reviewedBy: text("reviewed_by").references(() => user.id, { onDelete: "set null" }),
+  reviewedAt: integer("reviewed_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, (table) => [
+  index("orders_user_status_idx").on(table.userId, table.status),
+  index("orders_status_created_idx").on(table.status, table.createdAt),
+]);
+
 export const familyMembers = sqliteTable("family_members", {
   familyId: text("family_id").notNull().references(() => timelines.id, { onDelete: "cascade" }),
   personId: text("person_id").notNull().references(() => timelines.id, { onDelete: "cascade" }),
