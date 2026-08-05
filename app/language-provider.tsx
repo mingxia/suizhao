@@ -54,8 +54,12 @@ export function LanguageProvider({ initialLocale, children }: { initialLocale: L
   return <LanguageContext.Provider value={{ locale, switchLocale }}>{children}</LanguageContext.Provider>;
 }
 
+export function useLanguage() {
+  return useContext(LanguageContext);
+}
+
 export function LanguageSwitcher() {
-  const context = useContext(LanguageContext);
+  const context = useLanguage();
   if (!context) return null;
   const { locale, switchLocale } = context;
 

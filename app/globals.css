@@ -105,8 +105,7 @@ body{min-height:100vh;display:flex;flex-direction:column}.site-content{min-heigh
 @media(max-width:720px){.album-showcase{margin-inline:-12px;padding-top:28px}.album-showcase .album-scene{margin-inline:0;padding-top:0}.album-switch{margin-bottom:11px}.footer-brand{justify-content:center;flex-direction:column;gap:7px}.footer-brand p{display:none;white-space:normal}.footer-links{gap:24px}.footer-copyright span{display:none}}
 @media(max-width:380px){.album-showcase{margin-inline:-8px}.album-switch button{min-width:84px;padding-inline:12px}}
 
-/* Bilingual site controls and English wordmark */
+/* Bilingual site controls */
 .language-switcher{display:flex;align-items:center;gap:5px;padding:6px 10px;border:1px solid #d8cab9;border-radius:999px;background:#fffaf3a8;color:#8a7b6d;font-size:12px;white-space:nowrap}
 .language-switcher button{border:0;padding:2px;background:transparent;color:inherit;font:inherit;cursor:pointer}.language-switcher button.active{color:#8b5c32;font-weight:700}
-.english-brand-name{display:none;font-family:Georgia,"Times New Roman",serif;font-size:31px;line-height:1;letter-spacing:.08em;color:#493b30}
-html[data-locale="en"] .brand-logo-image{display:none}html[data-locale="en"] .english-brand-name{display:inline-block}
+
