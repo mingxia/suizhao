@@ -303,4 +303,9 @@ export const englishTranslations: Record<string, string> = {
   "会员": "Membership",
   "邮箱": "Email",
   "首页": "Home",
+  "当前会员级别": "Current plan",
+  "免费权益已包含": "Free benefits included",
+  "您已是终身会员": "You already have lifetime membership",
+  "立即升级为终身会员": "Upgrade to lifetime now",
+  "终身会员购买功能即将开放 · 免费会员可先提交升级意向": "Lifetime purchase is coming soon · Free members can submit upgrade interest first",
 };
