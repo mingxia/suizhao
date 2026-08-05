@@ -7,7 +7,7 @@ export function Logo({ className, href }: { className?: string; href: string }) 
           it through Next's image optimizer, which is unavailable on this deployment. */}
       <img
         className="brand-logo-image"
-        src="/images/logo.png"
+        src="/images/cnlogo.svg"
         alt="照见"
         width={160}
         height={64}
