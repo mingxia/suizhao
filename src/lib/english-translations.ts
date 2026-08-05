@@ -63,6 +63,8 @@ export const englishTranslations: Record<string, string> = {
   "一个人记录，一家人见证": "One life recorded, witnessed by family",
   "一家人记录，一家人共创": "One family records, one family creates together",
   "一次购买 · 终身使用": "One purchase · Lifetime access",
+  "海外区定价": "Overseas price",
+  "中文区定价": "China price",
   "一起共创 · 共同编辑": "Create together · Co-edit",
   "上传失败，请重新尝试。": "Upload failed. Please try again.",
   "两次输入的新密码不一致": "The new passwords do not match.",
