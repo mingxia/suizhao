@@ -17,12 +17,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     const email = String(data.get("email") ?? "").trim().toLowerCase();
     const username = String(data.get("username") ?? "").trim();
     const password = String(data.get("password") ?? "");
+    const name = String(data.get("name") ?? "").trim();
     const loginId = String(data.get("loginId") ?? "").trim();
     const result = mode === "login"
       ? loginId.includes("@")
         ? await authClient.signIn.email({ email: loginId.toLowerCase(), password })
         : await authClient.signIn.username({ username: loginId, password })
-      : await authClient.signUp.email({ email, password, username, name: String(data.get("name") ?? "") });
+      : await authClient.signUp.email({ email, password, username, displayUsername: name, name });
     if (result.error) {
       setError(result.error.message ?? (mode === "login" ? "登录失败，请检查用户名/邮箱和密码。" : "注册失败，请稍后重试。"));
       setPending(false);
