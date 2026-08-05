@@ -4,6 +4,8 @@ export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  username: text("username").unique(),
+  displayUsername: text("display_username"),
   emailVerified: integer("email_verified", { mode: "boolean" }).notNull().default(false),
   image: text("image"),
   membership: text("membership", { enum: ["free", "lifetime"] }).notNull().default("free"),
