@@ -21,11 +21,11 @@ export default async function MembershipPage() {
     <section className="pricing-grid" aria-label="会员方案">
       <article className="pricing-card card">
         <p className="plan-label">免费会员</p><h2>免费</h2><p className="plan-note">注册后自动获得</p><div className="plan-divider" />
-        <ul><li><Check />创建 1 个个人照见</li><li><Check />每岁上传一张成长照片</li><li><Check />私密保存成长记忆</li><li><Check />家人见证及留言功能</li></ul>
+        <ul><li><Check />创建 1 个个人照见</li><li><Check />每岁上传一张成长照片</li><li><Check />私密保存成长记忆</li><li><Check />家人见证及留言功能</li><li><Check />家人共享</li><li><Check />家人共创</li></ul>
         <Link className="btn btn-secondary plan-button" href="/register">免费开始</Link>
       </article>
       <article className="pricing-card pricing-featured card">
-        <span className="plan-badge">一次购买 · 终身使用</span><p className="plan-label">终身会员</p><h2><small>¥</small>99 <em>终身</em></h2><p className="plan-note">无需续费，永久有效</p><div className="plan-divider" />
+        <span className="plan-badge">一次购买 · 终身使用</span><p className="plan-label">终身会员</p><h2 className="lifetime-price"><span className="price-cn"><small>¥</small>299</span><span className="price-overseas" data-no-translate><small>$</small>49.99</span> <em>终身</em></h2><p className="plan-note"><span className="price-cn">中文区定价</span><span className="price-overseas">海外区定价</span> · 无需续费，永久有效</p><div className="plan-divider" />
         <ul><li><Check />创建无限个个人照见</li><li><Check />创建 1 个家庭照见</li><li><Check />精美可打印相册导出</li><li><Check />包含免费会员全部功能</li></ul>
         <Link className="btn plan-button" href="/register">先注册体验</Link>
       </article>
