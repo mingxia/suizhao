@@ -1,8 +1,9 @@
-import { count, eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { getDb } from "@/db";
 import { orders, timelines, user, yearPhotos } from "@/db/schema";
 import { requireSession } from "@/lib/session";
+import { AdminOrderPanel } from "./admin-order-panel";
 
 const metricDetails = [
   { key: "freeUsers", label: "免费用户数", description: "当前使用免费方案的注册用户", icon: "人" },
@@ -10,7 +11,6 @@ const metricDetails = [
   { key: "personTimelines", label: "个人照见数", description: "所有用户创建的个人照见", icon: "照" },
   { key: "familyTimelines", label: "家庭照见数", description: "所有用户创建的家庭照见", icon: "家" },
   { key: "photos", label: "上传照片数", description: "目前保存的全部成长照片", icon: "片" },
-  { key: "pendingOrders", label: "待处理订单", description: "已付款、等待管理员核实的会员订单", icon: "单" },
 ] as const;
 
 export default async function AdminDashboard() {
@@ -18,13 +18,14 @@ export default async function AdminDashboard() {
   if (!session.user.isAdmin) notFound();
 
   const db = await getDb();
-  const [[freeUsers], [lifetimeUsers], [personTimelines], [familyTimelines], [photos], [pendingOrders]] = await Promise.all([
+  const [[freeUsers], [lifetimeUsers], [personTimelines], [familyTimelines], [photos], pendingOrders] = await Promise.all([
     db.select({ value: count() }).from(user).where(eq(user.membership, "free")),
     db.select({ value: count() }).from(user).where(eq(user.membership, "lifetime")),
     db.select({ value: count() }).from(timelines).where(eq(timelines.type, "person")),
     db.select({ value: count() }).from(timelines).where(eq(timelines.type, "family")),
     db.select({ value: count() }).from(yearPhotos),
-    db.select({ value: count() }).from(orders).where(eq(orders.status, "pending")),
+    db.select({ id: orders.id, customerName: orders.customerName, customerEmail: orders.customerEmail, amountCents: orders.amountCents, currency: orders.currency, createdAt: orders.createdAt })
+      .from(orders).where(eq(orders.status, "pending")).orderBy(desc(orders.createdAt)),
   ]);
   const metrics = {
     freeUsers: freeUsers.value,
@@ -32,7 +33,6 @@ export default async function AdminDashboard() {
     personTimelines: personTimelines.value,
     familyTimelines: familyTimelines.value,
     photos: photos.value,
-    pendingOrders: pendingOrders.value,
   };
 
   return <main className="container admin-dashboard">
@@ -51,6 +51,7 @@ export default async function AdminDashboard() {
         <strong>{metrics[metric.key].toLocaleString("zh-CN")}</strong>
         <small>{metric.description}</small>
       </article>)}
+      <AdminOrderPanel orders={pendingOrders.map((order) => ({ ...order, createdAt: order.createdAt.toISOString() }))} />
     </section>
   </main>;
 }
