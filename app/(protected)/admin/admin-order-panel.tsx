@@ -41,7 +41,6 @@ export function AdminOrderPanel({ orders }: { orders: PendingOrder[] }) {
       <div className="admin-metric-icon" aria-hidden="true">单</div>
       <p>待处理订单</p>
       <strong>{orders.length.toLocaleString("zh-CN")}</strong>
-      <small>已付款、等待管理员核实的会员订单</small>
       <span className="admin-card-action">查看并处理 <span aria-hidden="true">→</span></span>
     </button>
     {open ? <div className="upload-modal-backdrop admin-order-backdrop" role="presentation" onMouseDown={(event) => {
