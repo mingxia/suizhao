@@ -37,8 +37,8 @@ export default async function Dashboard() {
             <span>预览</span>
           </div>
           <div className="dashboard-preview-years">
-            <article><div className="dashboard-year-image dashboard-year-one" /><strong>1998</strong><small>故事开始的地方</small></article>
-            <article><div className="dashboard-year-image dashboard-year-two" /><strong>2008</strong><small>慢慢长大的日子</small></article>
+            <article><div className="dashboard-year-image dashboard-year-one" /><strong>2021</strong><small>故事开始的地方</small></article>
+            <article><div className="dashboard-year-image dashboard-year-two" /><strong>2025</strong><small>慢慢长大的日子</small></article>
             <article className="dashboard-year-new"><div><b>＋</b><span>放入你的照片</span></div><strong>今年</strong><small>等待被记住</small></article>
           </div>
           <div className="dashboard-preview-line"><i /><i /><i /></div>
