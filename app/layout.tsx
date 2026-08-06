@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = english ? "Seeva | One life recorded, witnessed by family" : "照见｜一个人记录，一家人见证";
   const description = english ? "One photo each year. See growth come to light." : "每岁一张，照见成长。";
   const shareImage = {
-    url: "/images/home/hero06.webp",
+    url: "/images/seeva-og.png",
     alt: english ? "A family growth album on Seeva" : "照见家庭成长相册",
   };
 
