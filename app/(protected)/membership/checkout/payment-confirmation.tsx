@@ -4,12 +4,12 @@ import Image from "next/image";
 import { useActionState, useState } from "react";
 import { submitLifetimeOrder } from "@/actions/order-actions";
 
-export function PaymentConfirmation() {
-  const [confirmed, setConfirmed] = useState(false);
-  const [, formAction, pending] = useActionState(async () => {
+export function PaymentConfirmation({ hasActiveOrder }: { hasActiveOrder: boolean }) {
+  const [confirmed, setConfirmed] = useState(hasActiveOrder);
+  const [submitted, formAction, pending] = useActionState(async () => {
     await submitLifetimeOrder();
-    return null;
-  }, null);
+    return true;
+  }, hasActiveOrder);
 
   if (!confirmed) {
     return <button className="btn checkout-primary" type="button" onClick={() => setConfirmed(true)}>确认用户信息并继续付款</button>;
@@ -21,7 +21,9 @@ export function PaymentConfirmation() {
     </div>
     <p>请使用微信扫码付款。付款完成后点击下方按钮，我们会为管理员生成一条待处理订单。</p>
     <form action={formAction}>
-      <button className="btn checkout-primary" disabled={pending}>{pending ? "正在提交订单…" : "我已经付款，提交待核实订单"}</button>
+      <button className="btn checkout-primary" disabled={pending || submitted}>
+        {pending ? "正在提交订单…" : submitted ? "订单已提交，等待管理员核实" : "我已经付款，提交待核实订单"}
+      </button>
     </form>
   </div>;
 }

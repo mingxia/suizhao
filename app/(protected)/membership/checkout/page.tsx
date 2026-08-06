@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { getDb } from "@/db";
-import { user } from "@/db/schema";
+import { orders, user } from "@/db/schema";
 import { requireSession } from "@/lib/session";
 import { PaymentConfirmation } from "./payment-confirmation";
 
@@ -11,6 +11,12 @@ export default async function LifetimeCheckoutPage() {
   const [account] = await db.select({ name: user.name, email: user.email, membership: user.membership }).from(user).where(eq(user.id, session.user.id)).limit(1);
   if (!account) redirect("/login");
   if (account.membership === "lifetime") redirect("/membership");
+
+  const [activeOrder] = await db.select({ id: orders.id }).from(orders).where(and(
+    eq(orders.userId, session.user.id),
+    eq(orders.product, "lifetime_membership"),
+    inArray(orders.status, ["pending", "reviewing"]),
+  )).limit(1);
 
   return <main className="container checkout-page">
     <section className="card checkout-card">
@@ -23,7 +29,7 @@ export default async function LifetimeCheckoutPage() {
         <div><dt>购买内容</dt><dd>照见终身会员</dd></div>
         <div><dt>应付金额</dt><dd>¥299</dd></div>
       </dl>
-      <PaymentConfirmation />
+      <PaymentConfirmation hasActiveOrder={Boolean(activeOrder)} />
     </section>
   </main>;
 }
