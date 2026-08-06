@@ -13,6 +13,8 @@ pnpm install
 ```env
 BETTER_AUTH_SECRET=replace-with-a-long-random-secret
 BETTER_AUTH_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
 ```
 
 ## Cloudflare 登录
@@ -56,6 +58,20 @@ pnpm wrangler secret put BETTER_AUTH_SECRET
 ```
 
 `BETTER_AUTH_URL` 可放在 `wrangler.jsonc` 的 `vars` 中。
+
+## Google 登录配置
+
+在 Google Cloud Console 创建 **Web application** 类型的 OAuth 2.0 Client，并配置授权回调地址：
+
+- 本地：`http://localhost:3000/api/auth/callback/google`
+- 生产：`https://weseeva.com/api/auth/callback/google`
+
+Client ID 和 Client Secret 不要提交到仓库。生产环境使用 Cloudflare Secret：
+
+```bash
+pnpm wrangler secret put GOOGLE_CLIENT_ID
+pnpm wrangler secret put GOOGLE_CLIENT_SECRET
+```
 
 ## Schema 生成
 
