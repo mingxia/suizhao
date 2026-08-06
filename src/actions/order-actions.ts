@@ -36,3 +36,29 @@ export async function submitLifetimeOrder() {
   revalidatePath("/membership/checkout");
   revalidatePath("/admin");
 }
+
+export async function reviewLifetimeOrder(orderId: string, decision: "approve" | "delete") {
+  const session = await requireSession();
+  if (!session.user.isAdmin) return { success: false, error: "没有管理员权限" } as const;
+  if (decision !== "approve" && decision !== "delete") return { success: false, error: "无效的订单操作" } as const;
+
+  const db = await getDb();
+  const [order] = await db.select({ id: orders.id, userId: orders.userId }).from(orders)
+    .where(and(eq(orders.id, orderId), eq(orders.status, "pending"))).limit(1);
+  if (!order) return { success: false, error: "订单不存在或已被处理，请刷新后重试" } as const;
+
+  if (decision === "approve") {
+    const now = new Date();
+    await db.batch([
+      db.update(orders).set({ status: "approved", reviewedBy: session.user.id, reviewedAt: now, updatedAt: now })
+        .where(and(eq(orders.id, order.id), eq(orders.status, "pending"))),
+      db.update(user).set({ membership: "lifetime" }).where(eq(user.id, order.userId)),
+    ]);
+  } else {
+    await db.delete(orders).where(and(eq(orders.id, order.id), eq(orders.status, "pending")));
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/membership");
+  return { success: true } as const;
+}
