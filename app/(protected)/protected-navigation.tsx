@@ -7,7 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import { PersonModal } from "./person-modal";
 import { LanguageSwitcher } from "../language-provider";
 
-export function ProtectedNavigation({ isAdmin = false, associationOptions = [] }: { isAdmin?: boolean; associationOptions?: { id: string; name: string; nickname: string | null }[] }) {
+export function ProtectedNavigation({ isAdmin = false, isLifetimeMember = false, hasPersonalTimeline = false, hasFamilyTimeline = false, associationOptions = [] }: { isAdmin?: boolean; isLifetimeMember?: boolean; hasPersonalTimeline?: boolean; hasFamilyTimeline?: boolean; associationOptions?: { id: string; name: string; nickname: string | null }[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -30,7 +30,7 @@ export function ProtectedNavigation({ isAdmin = false, associationOptions = [] }
       {isAdmin ? <Link className={pathname === "/admin" ? "nav-link nav-link-active" : "nav-link"} href="/admin">
         系统大屏
       </Link> : null}
-      <PersonModal mode="create" associationOptions={associationOptions} className="btn header-create-button">创建照见</PersonModal>
+      <PersonModal mode="create" associationOptions={associationOptions} isLifetimeMember={isLifetimeMember} hasPersonalTimeline={hasPersonalTimeline} hasFamilyTimeline={hasFamilyTimeline} className="btn header-create-button">创建照见</PersonModal>
       <button className="sign-out-button" type="button" onClick={signOut} disabled={isSigningOut}>
         {isSigningOut ? "正在退出…" : "退出登录"}
       </button>
