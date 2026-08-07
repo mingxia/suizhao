@@ -13,6 +13,8 @@ pnpm install
 ```env
 BETTER_AUTH_SECRET=replace-with-a-long-random-secret
 BETTER_AUTH_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
 ```
 
 ## Cloudflare 登录
@@ -56,6 +58,35 @@ pnpm wrangler secret put BETTER_AUTH_SECRET
 ```
 
 `BETTER_AUTH_URL` 可放在 `wrangler.jsonc` 的 `vars` 中。
+
+## Google 登录配置
+
+在 Google Cloud Console 创建 **Web application** 类型的 OAuth 2.0 Client，并配置授权回调地址：
+
+- 本地：`http://localhost:3000/api/auth/callback/google`
+- 生产：`https://weseeva.com/api/auth/callback/google`
+
+Client ID 和 Client Secret 不要提交到仓库。生产环境使用 Cloudflare Secret：
+
+```bash
+pnpm wrangler secret put GOOGLE_CLIENT_ID
+pnpm wrangler secret put GOOGLE_CLIENT_SECRET
+```
+
+这两个命令不是把值写进 `wrangler.jsonc`。请在项目根目录依次运行命令；Wrangler
+出现输入提示后，分别粘贴 Google Cloud Console 生成的 **Client ID** 和
+**Client Secret** 并确认。Wrangler 会将它们直接加密保存到当前 `seeva` Worker 的
+Cloudflare Secrets 中，命令和密钥的对应关系如下：
+
+| Wrangler Secret 名称 | 提示出现后粘贴的 Google 值 |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` | OAuth 2.0 Client 的 Client ID |
+| `GOOGLE_CLIENT_SECRET` | 同一个 OAuth 2.0 Client 的 Client Secret |
+
+也可以在 Cloudflare Dashboard 的 **Workers & Pages → seeva → Settings → Variables and
+Secrets** 中添加同名的两个 **Secret**。不要将它们添加为明文 Variable，也不要放进
+`wrangler.jsonc` 的 `vars`；`wrangler.jsonc` 会被 Git 提交，适合存放公开的
+`BETTER_AUTH_URL`，不适合存放 OAuth 凭据。设置 Secret 后重新部署 Worker。
 
 ## Schema 生成
 
