@@ -73,6 +73,21 @@ pnpm wrangler secret put GOOGLE_CLIENT_ID
 pnpm wrangler secret put GOOGLE_CLIENT_SECRET
 ```
 
+这两个命令不是把值写进 `wrangler.jsonc`。请在项目根目录依次运行命令；Wrangler
+出现输入提示后，分别粘贴 Google Cloud Console 生成的 **Client ID** 和
+**Client Secret** 并确认。Wrangler 会将它们直接加密保存到当前 `seeva` Worker 的
+Cloudflare Secrets 中，命令和密钥的对应关系如下：
+
+| Wrangler Secret 名称 | 提示出现后粘贴的 Google 值 |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` | OAuth 2.0 Client 的 Client ID |
+| `GOOGLE_CLIENT_SECRET` | 同一个 OAuth 2.0 Client 的 Client Secret |
+
+也可以在 Cloudflare Dashboard 的 **Workers & Pages → seeva → Settings → Variables and
+Secrets** 中添加同名的两个 **Secret**。不要将它们添加为明文 Variable，也不要放进
+`wrangler.jsonc` 的 `vars`；`wrangler.jsonc` 会被 Git 提交，适合存放公开的
+`BETTER_AUTH_URL`，不适合存放 OAuth 凭据。设置 Secret 后重新部署 Worker。
+
 ## Schema 生成
 
 认证表 Schema 应由 Better Auth CLI 生成并保存到 `src/db/schema/auth.ts`；业务表在 `src/db/schema/app.ts`。生成迁移：
