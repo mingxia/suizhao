@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createPerson, updatePerson } from "@/actions/person-actions";
 import { resizeToWebp } from "@/lib/browser-image";
@@ -9,7 +10,7 @@ import { resizeToWebp } from "@/lib/browser-image";
 type AssociationOption = { id: string; name: string; nickname?: string | null };
 type PersonValues = { id: string; type: "person" | "family"; name: string; nickname: string; birthday: string; privacy: "private" | "unlisted"; hasCover?: boolean; memberIds?: string[] };
 
-export function PersonModal({ mode, person, associationOptions = [], className, children }: { mode: "create" | "edit"; person?: PersonValues; associationOptions?: AssociationOption[]; className?: string; children: React.ReactNode }) {
+export function PersonModal({ mode, person, associationOptions = [], isLifetimeMember = false, hasPersonalTimeline = false, hasFamilyTimeline = false, className, children }: { mode: "create" | "edit"; person?: PersonValues; associationOptions?: AssociationOption[]; isLifetimeMember?: boolean; hasPersonalTimeline?: boolean; hasFamilyTimeline?: boolean; className?: string; children: React.ReactNode }) {
   const router = useRouter();
   const titleId = useId();
   const [open, setOpen] = useState(false);
@@ -57,6 +58,9 @@ export function PersonModal({ mode, person, associationOptions = [], className, 
   }
 
   const title = mode === "create" ? "创建照见" : "照见设置";
+  const canCreatePersonal = isLifetimeMember || !hasPersonalTimeline;
+  const canCreateFamily = isLifetimeMember && !hasFamilyTimeline;
+  const creationLimitReached = mode === "create" && !canCreatePersonal && !canCreateFamily;
   return <>
     <button type="button" className={className} onClick={() => { setError(""); setCoverPreview(""); setOpen(true); }}>{children}</button>
     {open && createPortal(<div className="upload-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
@@ -67,9 +71,11 @@ export function PersonModal({ mode, person, associationOptions = [], className, 
         <form className="person-form" action={submit}>
           {mode === "create" ? <fieldset className="timeline-type-fieldset">
             <legend>照见类型</legend>
-            <label className={type === "person" ? "timeline-type-option timeline-type-option-active" : "timeline-type-option"}><input type="radio" name="type" value="person" checked={type === "person"} onChange={() => setType("person")} /><strong>个人照见</strong><span>每岁一张，记录个人成长</span></label>
-            <label className={type === "family" ? "timeline-type-option timeline-type-option-active" : "timeline-type-option"}><input type="radio" name="type" value="family" checked={type === "family"} onChange={() => setType("family")} /><strong>家庭照见</strong><span>从结婚照开始，每年一张全家福 · 终身会员</span></label>
+            <label className={`timeline-type-option${type === "person" ? " timeline-type-option-active" : ""}${!canCreatePersonal ? " timeline-type-option-disabled" : ""}`} aria-disabled={!canCreatePersonal}><input type="radio" name="type" value="person" checked={type === "person"} disabled={!canCreatePersonal} onChange={() => setType("person")} /><strong>个人照见</strong><span>{canCreatePersonal ? "每岁一张，记录个人成长" : "免费会员仅可创建 1 个，当前已达上限"}</span></label>
+            <label className={`timeline-type-option${type === "family" ? " timeline-type-option-active" : ""}${!canCreateFamily ? " timeline-type-option-disabled" : ""}`} aria-disabled={!canCreateFamily}><input type="radio" name="type" value="family" checked={type === "family"} disabled={!canCreateFamily} onChange={() => setType("family")} /><strong>家庭照见</strong><span>{canCreateFamily ? "从结婚照开始，每年一张全家福 · 终身会员" : isLifetimeMember ? "每位终身会员仅可创建 1 个，当前已达上限" : "仅终身会员可创建，升级后即可使用"}</span></label>
           </fieldset> : <input type="hidden" name="type" value={person?.type} />}
+          {mode === "create" && !canCreatePersonal && <p className="timeline-limit-notice">你的免费个人照见名额已使用。现有照见可以继续正常记录；如需创建更多个人照见或家庭照见，可<Link href="/membership">查看终身会员权益</Link>。</p>}
+          <fieldset className="person-details-fieldset" disabled={creationLimitReached}>
           <label className="cover-upload-field">封面图 <span>（选填，推荐横向照片）</span>
             <span className="cover-upload-preview">
               {coverPreview || (mode === "edit" && person?.hasCover) ? <img src={coverPreview || `/api/persons/${person?.id}/cover`} alt="封面图预览" /> : <b aria-hidden="true">＋</b>}
@@ -92,7 +98,8 @@ export function PersonModal({ mode, person, associationOptions = [], className, 
           </fieldset>}
           {mode === "edit" ? <label>可见范围<select name="privacy" defaultValue={person?.privacy}><option value="private">私有</option><option value="unlisted">私密链接（预留）</option></select></label> : <input type="hidden" name="privacy" value="private" />}
           {error && <p className="form-error" role="alert">{error}</p>}
-          <div className="person-form-actions"><button type="button" className="btn-secondary modal-cancel" onClick={() => setOpen(false)}>取消</button><button className="btn" disabled={pending}>{pending ? "正在保存…" : "保存"}</button></div>
+          </fieldset>
+          <div className="person-form-actions"><button type="button" className="btn-secondary modal-cancel" onClick={() => setOpen(false)}>{creationLimitReached ? "关闭" : "取消"}</button>{!creationLimitReached && <button className="btn" disabled={pending}>{pending ? "正在保存…" : "保存"}</button>}</div>
         </form>
       </section>
     </div>, document.body)}

@@ -71,7 +71,7 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
                 </Link>;
               })}
             </div>
-            <PersonModal mode="create" associationOptions={ownedPersons.filter((item) => item.type === "person")} className="timeline-switcher-create">＋ 创建新的照见</PersonModal>
+            <PersonModal mode="create" associationOptions={ownedPersons.filter((item) => item.type === "person")} isLifetimeMember={session.user.membership === "lifetime"} hasPersonalTimeline={ownedPersons.some((item) => item.type === "person")} hasFamilyTimeline={ownedPersons.some((item) => item.type === "family")} className="timeline-switcher-create">＋ 创建新的照见</PersonModal>
           </div>
         </details>
         <p>{person.birthday.getUTCFullYear()}年{person.type === "family" ? `成婚 · 携手${currentAge}年` : `出生 · ${currentAge}岁`}</p>

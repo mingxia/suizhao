@@ -22,7 +22,7 @@ export default async function Dashboard() {
         <p className="dashboard-eyebrow"><span aria-hidden="true" />你的故事，从这里开始</p>
         <h1 id="welcome-title">把散落的照片，<br /><em>变成看得见的时光</em></h1>
         <p className="dashboard-welcome-description">从出生那年开始，每年挑一张照片。几分钟，就能拥有一页只属于你的人生故事。</p>
-        <PersonModal mode="create" className="btn dashboard-create-button">
+        <PersonModal mode="create" isLifetimeMember={session.user.membership === "lifetime"} className="btn dashboard-create-button">
           创建我的第一个照见 <span aria-hidden="true">→</span>
         </PersonModal>
         <p className="dashboard-create-note"><span aria-hidden="true">✓</span> 免费创建 · 随时补充 · 仅自己可见</p>

@@ -13,7 +13,7 @@ export default async function MyWitnessesPage() {
   const session = await requireSession();
   const db = await getDb();
   const [account] = await db.select({ membership: user.membership, email: user.email }).from(user).where(eq(user.id, session.user.id)).limit(1);
-  const ownedPersons = await db.select({ id: timelines.id, name: timelines.name, nickname: timelines.nickname, updatedAt: timelines.updatedAt }).from(timelines).where(eq(timelines.ownerId, session.user.id)).orderBy(desc(timelines.updatedAt));
+  const ownedPersons = await db.select({ id: timelines.id, name: timelines.name, nickname: timelines.nickname, type: timelines.type, updatedAt: timelines.updatedAt }).from(timelines).where(eq(timelines.ownerId, session.user.id)).orderBy(desc(timelines.updatedAt));
   const membership = account?.membership ?? "free";
   const sharedPersons = await db.select({ id: timelines.id, name: timelines.name, role: timelineMembers.role, relation: timelineMembers.relation }).from(timelineMembers).innerJoin(timelines, eq(timelines.id, timelineMembers.timelineId)).where(and(eq(timelineMembers.userId, session.user.id), eq(timelineMembers.status, "accepted")));
   const invitations = await db.select({ id: timelineInvitations.id, name: timelines.name, role: timelineInvitations.role, relation: timelineInvitations.relation }).from(timelineInvitations).innerJoin(timelines, eq(timelines.id, timelineInvitations.timelineId)).where(and(eq(timelineInvitations.inviteeUserId, session.user.id), eq(timelineInvitations.status, "pending")));
@@ -30,7 +30,7 @@ export default async function MyWitnessesPage() {
           <strong>{person.name}</strong>
           {person.nickname && <small>{person.nickname}</small>}
         </Link>)}
-      </div> : <div className="card my-empty-card"><p className="muted">还没有创建照见。</p><PersonModal mode="create" className="btn">创建第一个照见</PersonModal></div>}
+      </div> : <div className="card my-empty-card"><p className="muted">还没有创建照见。</p><PersonModal mode="create" isLifetimeMember={membership === "lifetime"} className="btn">创建第一个照见</PersonModal></div>}
     </section>
 
     {(sharedPersons.length > 0 || invitations.length > 0) && <section className="my-section"><div className="my-section-heading"><h2>家人共享给我的照见</h2></div>
