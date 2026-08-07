@@ -25,7 +25,7 @@ export default async function MembershipPage() {
   return <main className="membership-page">
     <header className="landing-nav membership-nav">
       <Logo className="wordmark" href="/" />
-      {session ? <ProtectedNavigation /> : <nav aria-label="主导航"><Link href="/">首页</Link><Link className="nav-active" href="/membership">会员</Link><Link className="btn btn-large" href="/login">开始记录</Link><LanguageSwitcher /></nav>}
+      {session ? <ProtectedNavigation /> : <nav aria-label="主导航"><Link href="/">首页</Link><Link className="nav-active" href="/membership">会员</Link><Link href="/about">关于</Link><Link className="btn btn-large" href="/login">开始记录</Link><LanguageSwitcher /></nav>}
     </header>
     <section className="membership-hero">
       <p className="eyebrow">MEMBERSHIP</p><h1>把重要的时间，长久地留在这里</h1><p>记录一个人的成长，也收藏一个家庭一年年的团圆。</p>
