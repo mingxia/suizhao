@@ -20,6 +20,7 @@ export function HeroAlbumSlider() {
   const [active, setActive] = useState<"person" | "family">("person");
   const isFamily = active === "family";
   const items = isFamily ? familyYears : personalYears;
+  const [cover, ...memories] = items;
 
   return (
     <div className="album-showcase" id="example">
@@ -34,20 +35,39 @@ export function HeroAlbumSlider() {
               <strong>照见</strong><span>{isFamily ? "我们家的时光长卷" : "个人与家庭的成长档案"}</span>
               <span className="album-user" aria-label={isFamily ? "我的家庭" : "我的"}>{isFamily ? "⌂  我们家" : "♙  我的"}</span>
             </div>
-            <div className="year-strip">
-              {items.map(({ label, year, image }, index) => (
-                <article className="year-card" key={`${active}-${label}`}>
-                  <strong>{label}</strong><small>{year}</small>
-                  <div className={`portrait${isFamily ? " family-portrait" : ""}`} role="img" aria-label={isFamily ? familyYears[index].alt : `${label}成长照片`} style={{ backgroundImage: `url(${image})` }} />
-                </article>
-              ))}
-              <article className="year-card pending">
-                <strong>{isFamily ? "明年" : "6岁"}</strong><small>{new Date().getFullYear()}</small>
-                <div className="add-photo"><b>＋</b><span>待记录</span></div>
-              </article>
+            <div className="album-story">
+              <div
+                className={`album-cover${isFamily ? " family-portrait" : ""}`}
+                role="img"
+                aria-label={isFamily ? familyYears[0].alt : `${cover.label}成长照片`}
+                style={{ backgroundImage: `url(${cover.image})` }}
+              />
+              <div className="album-memories">
+                <div className="album-title">
+                  <div>
+                    <h2>{isFamily ? "我们家的时光档案" : "小满的成长档案"}</h2>
+                    <p><strong>{cover.label}</strong><i /> <time>{cover.year}</time></p>
+                  </div>
+                  <span>{isFamily ? "家庭照见" : "个人照见"}</span>
+                </div>
+                <div className="year-strip">
+                  {memories.map(({ label, year, image }, index) => (
+                    <article className="year-card" key={`${active}-${label}`}>
+                      <div className={`portrait${isFamily ? " family-portrait" : ""}`} role="img" aria-label={isFamily ? familyYears[index + 1].alt : `${label}成长照片`} style={{ backgroundImage: `url(${image})` }} />
+                      <div className="year-card-label"><strong>{label}</strong><small>{year}</small></div>
+                    </article>
+                  ))}
+                  <article className="year-card pending">
+                    <div className="add-photo"><b>＋</b><span>待记录</span></div>
+                    <div className="year-card-label"><strong>{isFamily ? "明年" : "6岁"}</strong><small>{new Date().getFullYear()}</small></div>
+                  </article>
+                </div>
+              </div>
             </div>
-            <div className="timeline">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
-            <p className="album-caption">{isFamily ? "一家人记录，一家人共创" : "一个人记录，一家人见证"}</p>
+            <div className="album-timeline">
+              <div className="timeline">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div>
+              <p className="album-caption">{isFamily ? "一家人记录，一家人共创" : "一个人记录，一家人见证"}</p>
+            </div>
           </div>
         </div>
       </div>
