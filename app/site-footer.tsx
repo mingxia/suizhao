@@ -12,6 +12,7 @@ export function SiteFooter() {
         <nav className="footer-links" aria-label="页脚导航">
           <Link href="/">首页</Link>
           <Link href="/membership">会员</Link>
+          <Link href="/about">关于</Link>
           <Link href="/register">开始记录</Link>
         </nav>
         <p className="footer-copyright">© {new Date().getFullYear()} 照见<br /><span>珍藏每一个值得被记住的年份</span></p>

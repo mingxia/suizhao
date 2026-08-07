@@ -26,6 +26,7 @@ export default async function Home() {
         {session ? <ProtectedNavigation /> : <nav aria-label="主导航">
           <Link className="nav-active" href="/">首页</Link>
           <Link href="/membership">会员</Link>
+          <Link href="/about">关于</Link>
           <Link className="btn btn-large" href="/login">开始记录</Link>
           <LanguageSwitcher />
         </nav>}
@@ -39,7 +40,7 @@ export default async function Home() {
           <p className="hero-description">一年只留一张照片，<br />让家人共同见证一个人的成长。</p>
           <div className="hero-actions">
             <Link className="btn btn-primary" href="/register">开始记录</Link>
-            <a className="btn btn-secondary" href="#example">查看示例 <span aria-hidden="true">›</span></a>
+            <Link className="btn btn-secondary" href="/about">了解照见 <span aria-hidden="true">›</span></Link>
           </div>
         </div>
 
