@@ -45,7 +45,7 @@ export function HeroAlbumSlider() {
               <div className="album-memories">
                 <div className="album-title">
                   <div>
-                    <h2>{isFamily ? "我们家的时光档案" : "小满的成长档案"}</h2>
+                    <h2>{isFamily ? "小树家的故事" : "小树成长记"}</h2>
                     <p><strong>{cover.label}</strong><i /> <time>{cover.year}</time></p>
                   </div>
                   <span>{isFamily ? "家庭照见" : "个人照见"}</span>
