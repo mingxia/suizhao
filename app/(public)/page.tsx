@@ -35,7 +35,7 @@ export default async function Home() {
       <section className="hero-panel">
         <div className="hero-copy">
           <p className="eyebrow">个人与家庭的成长档案</p>
-          <h1>每岁一张，<br />照见成长。</h1>
+          <h1>每岁一张<br />照见成长</h1>
           <span className="title-rule" />
           <p className="hero-description">一年只留一张照片，<br />让家人共同见证一个人的成长。</p>
           <div className="hero-actions">

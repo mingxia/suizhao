@@ -261,6 +261,7 @@ export const englishTranslations: Record<string, string> = {
   "每岁一张，": "One photo each year.",
   "添加结婚照": "Add wedding photo",
   "照见成长。": "See growth come to light.",
+  "照见成长": "See growth come to light.",
   "确认新密码": "Confirm new password",
   "终身会员数": "Lifetime members",
   "请选择照片": "Choose a photo.",
