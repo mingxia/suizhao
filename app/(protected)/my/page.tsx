@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getDb } from "@/db";
 import { timelineInvitations, timelineMembers, timelines, user } from "@/db/schema";
 import { requireSession } from "@/lib/session";
-import { PersonModal } from "../person-modal";
 import { AccountActions } from "../account-actions";
 import { respondToTimelineInvitation } from "@/actions/member-actions";
 
@@ -59,8 +58,8 @@ export default async function MyWitnessesPage() {
 
   return <main className="container my-page">
     <header className="my-page-hero">
-      <div><p className="dashboard-eyebrow">MY SEEVAS</p><h1>我的照见</h1><p>管理你珍藏、共享和共同记录的生命时光。</p><div className="my-stats"><span><b>{ownedPersons.length}</b> 个我创建的</span><i /><span><b>{sharedPersons.length}</b> 个共享给我</span><i /><span><b>{collaborativePersons.length}</b> 个参与共创</span></div></div>
-      <PersonModal mode="create" isLifetimeMember={membership === "lifetime"} className="btn">＋ 创建照见</PersonModal>
+      <div><p className="dashboard-eyebrow">MY SEEVAS</p><h1>我的照见</h1><p>管理你珍藏、共享和共同记录的生命时光。</p></div>
+      <div className="my-stats" aria-label="照见统计"><span><b>{ownedPersons.length}</b> 个我创建的</span><i /><span><b>{sharedPersons.length}</b> 个共享给我</span><i /><span><b>{collaborativePersons.length}</b> 个参与共创</span></div>
     </header>
 
     {invitations.length > 0 && <section className="my-section invitation-section"><div className="my-section-heading"><div><h2>待处理邀请</h2><p>接受后，照见会出现在对应的分组中。</p></div><span>{invitations.length} 个</span></div>
