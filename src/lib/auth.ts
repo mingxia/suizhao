@@ -42,6 +42,11 @@ export async function getAuth() {
         domain: ".weseeva.com",
       },
     },
-    plugins: [username({ schema: { user: { fields: { displayUsername: "name" } } } }), nextCookies()],
+    plugins: [username({
+      minUsernameLength: 3,
+      maxUsernameLength: 30,
+      usernameValidator: (value) => /^[A-Za-z0-9_.]+$/.test(value),
+      schema: { user: { fields: { displayUsername: "name" } } },
+    }), nextCookies()],
   });
 }
