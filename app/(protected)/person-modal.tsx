@@ -17,7 +17,6 @@ export function PersonModal({ mode, person, associationOptions = [], isLifetimeM
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [type, setType] = useState<"person" | "family">(person?.type ?? "person");
-  const [coverPreview, setCoverPreview] = useState("");
   const [memberSearch, setMemberSearch] = useState("");
 
   useEffect(() => {
@@ -62,7 +61,7 @@ export function PersonModal({ mode, person, associationOptions = [], isLifetimeM
   const canCreateFamily = isLifetimeMember && !hasFamilyTimeline;
   const creationLimitReached = mode === "create" && !canCreatePersonal && !canCreateFamily;
   return <>
-    <button type="button" className={className} onClick={() => { setError(""); setCoverPreview(""); setOpen(true); }}>{children}</button>
+    <button type="button" className={className} onClick={() => { setError(""); setOpen(true); }}>{children}</button>
     {open && createPortal(<div className="upload-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
       <section className="upload-modal person-form-modal card" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <button type="button" className="modal-close" aria-label="关闭" onClick={() => setOpen(false)}>×</button>
@@ -76,15 +75,9 @@ export function PersonModal({ mode, person, associationOptions = [], isLifetimeM
           </fieldset> : <input type="hidden" name="type" value={person?.type} />}
           {mode === "create" && !canCreatePersonal && <p className="timeline-limit-notice">你的免费个人照见名额已使用。现有照见可以继续正常记录；如需创建更多个人照见或家庭照见，可<Link href="/membership">查看终身会员权益</Link>。</p>}
           <fieldset className="person-details-fieldset" disabled={creationLimitReached}>
-          <label className="cover-upload-field">封面图 <span>（选填，推荐横向照片）</span>
-            <span className="cover-upload-preview">
-              {coverPreview || (mode === "edit" && person?.hasCover) ? <img src={coverPreview || `/api/persons/${person?.id}/cover`} alt="封面图预览" /> : <b aria-hidden="true">＋</b>}
-            </span>
-            <input name="cover" type="file" accept="image/jpeg,image/png,image/webp" disabled={pending} onChange={(event) => {
-              if (coverPreview) URL.revokeObjectURL(coverPreview);
-              const file = event.target.files?.[0];
-              setCoverPreview(file ? URL.createObjectURL(file) : "");
-            }} />
+          <label className="cover-upload-field">
+            <span>选择照片 <small>（选填，推荐横向照片）</small></span>
+            <input name="cover" type="file" accept="image/jpeg,image/png,image/webp" disabled={pending} />
           </label>
           <label>{type === "family" ? "名称" : "姓名"}<input name="name" required maxLength={30} defaultValue={person?.name} autoFocus /></label>
           <label>昵称 <span>（选填）</span><input name="nickname" maxLength={30} defaultValue={person?.nickname} /></label>
