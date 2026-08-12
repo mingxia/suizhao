@@ -1,4 +1,13 @@
 export const englishTranslations: Record<string, string> = {
+  "这一年，家在哪里？": "Where was home this year?",
+  "这一年，有什么值得记住？": "What was worth remembering this year?",
+  "这一年，家里最值得记住的事？": "What did your family most want to remember this year?",
+  "例如：郑州、北京、杭州": "For example: Zhengzhou, Beijing, Hangzhou",
+  "例如：第一次上幼儿园、毕业、结婚": "For example: first day of kindergarten, graduation, marriage",
+  "例如：搬进了新家": "For example: moved into a new home",
+  "都可以留空，以后再写。": "Both are optional. You can add them later.",
+  "已悄悄记下。": "Quietly saved.",
+  "保存中…": "Saving…",
   "管理你珍藏、共享和共同记录的生命时光。": "Manage the life stories you preserve, share, and create together.",
   "接受后，照见会出现在对应的分组中。": "Once accepted, the Seeva will appear in the matching section.",
   "由你创建并拥有完整管理权限。": "Created by you, with full management access.",
