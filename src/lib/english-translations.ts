@@ -8,6 +8,8 @@ export const englishTranslations: Record<string, string> = {
   "都可以留空，以后再写。": "Both are optional. You can add them later.",
   "已悄悄记下。": "Quietly saved.",
   "保存中…": "Saving…",
+  "再悄悄留下一点": "Quietly keep a little more",
+  "都可选填": "Both optional",
   "管理你珍藏、共享和共同记录的生命时光。": "Manage the life stories you preserve, share, and create together.",
   "接受后，照见会出现在对应的分组中。": "Once accepted, the Seeva will appear in the matching section.",
   "由你创建并拥有完整管理权限。": "Created by you, with full management access.",

@@ -5,7 +5,7 @@ export const yearDetailsSchema = z.object({
   locationName: z.string().trim().max(50, "地点最多50字").optional().or(z.literal("")),
   yearHighlight: z.string().trim().max(100, "值得记住的事最多100字").optional().or(z.literal("")),
 });
-export const uploadSchema = z.object({ stage: z.enum(["first_seen", "age"]).default("age"), age: z.preprocess((value) => value === "" || value == null ? undefined : value, z.coerce.number().int().min(1).optional()), note: z.string().trim().max(50).optional().or(z.literal("")), takenAt: z.coerce.date().optional(), replace: z.coerce.boolean().default(false) }).superRefine((data, context) => {
+export const uploadSchema = z.object({ stage: z.enum(["first_seen", "age"]).default("age"), age: z.preprocess((value) => value === "" || value == null ? undefined : value, z.coerce.number().int().min(1).optional()), note: z.string().trim().max(50).optional().or(z.literal("")), locationName: yearDetailsSchema.shape.locationName, yearHighlight: yearDetailsSchema.shape.yearHighlight, takenAt: z.coerce.date().optional(), replace: z.coerce.boolean().default(false) }).superRefine((data, context) => {
   if (data.stage === "age" && data.age === undefined) context.addIssue({ code: "custom", path: ["age"], message: "年龄照片必须提供年龄" });
   if (data.stage === "first_seen" && data.age !== undefined) context.addIssue({ code: "custom", path: ["age"], message: "初见照片不使用年龄" });
 });

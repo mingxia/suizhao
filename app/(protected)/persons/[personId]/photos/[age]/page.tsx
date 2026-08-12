@@ -33,6 +33,6 @@ export default async function PhotoDetail({ params }: { params: Promise<{ person
       <nav>{photos[index - 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index - 1])}`}>{adjacentLabel(photos[index - 1])}</a>} {photos[index + 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index + 1])}`}>下一岁</a>}</nav>
       {person.role !== "viewer" && <YearDetailsForm photoId={photo.id} type={person.type} locationName={photo.locationName ?? ""} yearHighlight={photo.yearHighlight ?? ""} />}
     </>}
-    {photo && person.role !== "viewer" && <PhotoReplacementModal personId={personId} stage={firstSeen ? "first_seen" : "age"} age={numericAge} note={photo.note ?? ""} takenAt={photo.takenAt?.toISOString().slice(0, 10) ?? ""} />}
+    {photo && person.role !== "viewer" && <PhotoReplacementModal personId={personId} type={person.type} stage={firstSeen ? "first_seen" : "age"} age={numericAge} note={photo.note ?? ""} takenAt={photo.takenAt?.toISOString().slice(0, 10) ?? ""} locationName={photo.locationName ?? ""} yearHighlight={photo.yearHighlight ?? ""} />}
   </div></main>;
 }
