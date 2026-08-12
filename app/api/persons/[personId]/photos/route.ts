@@ -34,7 +34,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ per
     await bucket.put(keys.largeKey, large.stream(), { httpMetadata: { contentType: "image/webp" } });
     const now = new Date();
     if (old) {
-      await db.update(yearPhotos).set({ ...keys, mimeType: "image/webp", note: parsed.data.note || old.note, takenAt: parsed.data.takenAt, updatedAt: now }).where(eq(yearPhotos.id, old.id));
+      await db.update(yearPhotos).set({ ...keys, mimeType: "image/webp", note: parsed.data.note || null, locationName: parsed.data.locationName || null, yearHighlight: parsed.data.yearHighlight || null, takenAt: parsed.data.takenAt, updatedAt: now }).where(eq(yearPhotos.id, old.id));
       await recordTimelineUpdate(db, person.id, session.user.id, old.id, `${person.name}更新了${stage === "first_seen" ? "初见" : `${age}岁`}的照片`, now);
       bucket.delete(old.thumbnailKey).catch((error: unknown) => console.warn("r2_cleanup_failed", { key: old.thumbnailKey, error: String(error) }));
       bucket.delete(old.largeKey).catch((error: unknown) => console.warn("r2_cleanup_failed", { key: old.largeKey, error: String(error) }));
@@ -42,7 +42,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ per
     }
     const id = crypto.randomUUID();
     const year = stage === "first_seen" ? getFirstSeenYear(person.birthday) : getYearForAge(person.birthday, age!);
-    await db.insert(yearPhotos).values({ id, personId: person.id, stage, age, year, ...keys, mimeType: "image/webp", note: parsed.data.note || null, takenAt: parsed.data.takenAt, createdAt: now, updatedAt: now });
+    await db.insert(yearPhotos).values({ id, personId: person.id, stage, age, year, ...keys, mimeType: "image/webp", note: parsed.data.note || null, locationName: parsed.data.locationName || null, yearHighlight: parsed.data.yearHighlight || null, takenAt: parsed.data.takenAt, createdAt: now, updatedAt: now });
     await recordTimelineUpdate(db, person.id, session.user.id, id, `${person.name}新增了${stage === "first_seen" ? "初见" : `${age}岁`}的照片`, now);
     return Response.json({ id, ...keys });
   } catch (error) {

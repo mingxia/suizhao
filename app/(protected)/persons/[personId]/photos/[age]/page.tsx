@@ -5,6 +5,7 @@ import { getFirstSeenYear, getYearForAge } from "@/lib/age";
 import { requireTimelineViewer } from "@/lib/permissions";
 import { requireSession } from "@/lib/session";
 import { PhotoReplacementModal } from "./photo-replacement-modal";
+import { YearDetailsForm } from "./year-details-form";
 
 export default async function PhotoDetail({ params }: { params: Promise<{ personId: string; age: string }> }) {
   const { personId, age: ageParam } = await params;
@@ -25,8 +26,13 @@ export default async function PhotoDetail({ params }: { params: Promise<{ person
     {photo && <>
       <img src={`/api/photos/${photo.id}/file?variant=large`} alt={`${person.name}${firstSeen ? "的初见" : `${numericAge}岁`}照片`} style={{ maxWidth: "100%", maxHeight: "70vh" }} />
       {photo.note && <p>{photo.note}</p>}
+      {(photo.locationName || photo.yearHighlight) && <section className="year-details" aria-label="这一年的记忆">
+        {photo.locationName && <div><span>这一年，家在哪里？</span><p>{photo.locationName}</p></div>}
+        {photo.yearHighlight && <div><span>{person.type === "family" ? "这一年，家里最值得记住的事？" : "这一年，有什么值得记住？"}</span><p>{photo.yearHighlight}</p></div>}
+      </section>}
       <nav>{photos[index - 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index - 1])}`}>{adjacentLabel(photos[index - 1])}</a>} {photos[index + 1] && <a href={`/persons/${personId}/photos/${photoPath(photos[index + 1])}`}>下一岁</a>}</nav>
+      {person.role !== "viewer" && <YearDetailsForm photoId={photo.id} type={person.type} locationName={photo.locationName ?? ""} yearHighlight={photo.yearHighlight ?? ""} />}
     </>}
-    {photo && person.role !== "viewer" && <PhotoReplacementModal personId={personId} stage={firstSeen ? "first_seen" : "age"} age={numericAge} note={photo.note ?? ""} takenAt={photo.takenAt?.toISOString().slice(0, 10) ?? ""} />}
+    {photo && person.role !== "viewer" && <PhotoReplacementModal personId={personId} type={person.type} stage={firstSeen ? "first_seen" : "age"} age={numericAge} note={photo.note ?? ""} takenAt={photo.takenAt?.toISOString().slice(0, 10) ?? ""} locationName={photo.locationName ?? ""} yearHighlight={photo.yearHighlight ?? ""} />}
   </div></main>;
 }

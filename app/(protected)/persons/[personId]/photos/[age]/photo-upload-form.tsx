@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { resizeToWebp } from "@/lib/browser-image";
 import type { YearPhotoStage } from "@/db/schema/app";
 
-export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess, defaultNote = "", defaultTakenAt = "" }: { personId: string; stage: YearPhotoStage; age: number | null; replacing: boolean; onSuccess?: () => void; defaultNote?: string; defaultTakenAt?: string }) {
+export function PhotoUploadForm({ personId, type = "person", stage, age, replacing, onSuccess, defaultNote = "", defaultTakenAt = "", defaultLocationName = "", defaultYearHighlight = "" }: { personId: string; type?: "person" | "family"; stage: YearPhotoStage; age: number | null; replacing: boolean; onSuccess?: () => void; defaultNote?: string; defaultTakenAt?: string; defaultLocationName?: string; defaultYearHighlight?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -53,6 +53,11 @@ export function PhotoUploadForm({ personId, stage, age, replacing, onSuccess, de
     <label>选择照片<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required disabled={busy} /></label>
     <label>拍摄日期（选填）<input name="takenAt" type="date" defaultValue={defaultTakenAt} disabled={busy} /></label>
     <label>{stage === "first_seen" ? "初见的故事（选填）" : "这一岁的故事（选填）"}<textarea name="note" maxLength={50} rows={3} defaultValue={defaultNote} disabled={busy} /></label>
+    <div className="upload-optional-details">
+      <p>再悄悄留下一点 <span>都可选填</span></p>
+      <label>这一年，家在哪里？<input name="locationName" maxLength={50} defaultValue={defaultLocationName} placeholder="例如：郑州、北京、杭州" disabled={busy} /></label>
+      <label>{type === "family" ? "这一年，家里最值得记住的事？" : "这一年，有什么值得记住？"}<textarea name="yearHighlight" maxLength={100} rows={2} defaultValue={defaultYearHighlight} placeholder={type === "family" ? "例如：搬进了新家" : "例如：第一次上幼儿园、毕业、结婚"} disabled={busy} /></label>
+    </div>
     <button className="btn" disabled={busy}>{busy ? "请稍候…" : replacing ? "替换照片" : "保存照片"}</button>
     {message && <p role="status" aria-live="polite" className="muted">{message}</p>}
     <p className="muted upload-hint">照片只会存入私有空间；上传前会在浏览器中生成 WebP 尺寸。</p>

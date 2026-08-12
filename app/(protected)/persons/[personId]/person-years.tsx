@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { YearPhotoStage } from "@/db/schema/app";
 import { PhotoUploadForm } from "./photos/[age]/photo-upload-form";
 
-type YearCard = { year: number; photoId: string | null; note: string | null; takenAt: string | null } & (
+type YearCard = { year: number; photoId: string | null; note: string | null; takenAt: string | null; locationName: string | null; yearHighlight: string | null } & (
   | { stage: "first_seen"; age: null }
   | { stage: "age"; age: number }
 );
@@ -99,7 +99,7 @@ export function PersonYears({ personId, personName, type, cards, nextYear, canEd
         <p className="modal-eyebrow">{personName} · {type === "family" ? uploadCard.stage === "first_seen" ? "结婚照" : `第${uploadCard.age}年` : uploadCard.stage === "first_seen" ? "初见" : `${uploadCard.age}岁`}</p>
         <h2 id="upload-title">{uploadCard.photoId ? "替换这张照片" : type === "family" ? uploadCard.stage === "first_seen" ? "添加结婚照" : "添加这一年的全家福" : uploadCard.stage === "first_seen" ? "添加初见照片" : "添加这一岁的照片"}</h2>
         <p className="muted">{uploadCard.photoId ? "选择新照片后，当前照片将被替换；原有日期和故事已为你保留。" : uploadCard.stage === "first_seen" ? "选一张第一次被记录的照片，收藏相遇的起点。" : "选一张最能代表这一岁的照片，收藏此刻的故事。"}</p>
-        <PhotoUploadForm personId={personId} stage={uploadCard.stage} age={uploadCard.age} replacing={Boolean(uploadCard.photoId)} defaultNote={uploadCard.note ?? ""} defaultTakenAt={uploadCard.takenAt ?? ""} onSuccess={finishUpload} />
+        <PhotoUploadForm personId={personId} type={type} stage={uploadCard.stage} age={uploadCard.age} replacing={Boolean(uploadCard.photoId)} defaultNote={uploadCard.note ?? ""} defaultTakenAt={uploadCard.takenAt ?? ""} defaultLocationName={uploadCard.locationName ?? ""} defaultYearHighlight={uploadCard.yearHighlight ?? ""} onSuccess={finishUpload} />
       </section>
     </div>}
   </>;
