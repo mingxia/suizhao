@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,12 @@ export function PersonModal({ mode, person, associationOptions = [], isLifetimeM
   const [error, setError] = useState("");
   const [type, setType] = useState<"person" | "family">(person?.type ?? "person");
   const [memberSearch, setMemberSearch] = useState("");
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverName, setCoverName] = useState("");
+
+  useEffect(() => () => {
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+  }, [coverPreview]);
 
   useEffect(() => {
     if (!open) return;
@@ -27,6 +33,20 @@ export function PersonModal({ mode, person, associationOptions = [], isLifetimeM
     window.addEventListener("keydown", closeOnEscape);
     return () => { document.body.style.overflow = previousOverflow; window.removeEventListener("keydown", closeOnEscape); };
   }, [open]);
+
+  function previewCover(event: ChangeEvent<HTMLInputElement>) {
+    const cover = event.target.files?.[0];
+    setError("");
+    setCoverPreview(cover ? URL.createObjectURL(cover) : null);
+    setCoverName(cover?.name ?? "");
+  }
+
+  function openModal() {
+    setError("");
+    setCoverPreview(null);
+    setCoverName("");
+    setOpen(true);
+  }
 
   async function submit(formData: FormData) {
     setPending(true);
@@ -61,7 +81,7 @@ export function PersonModal({ mode, person, associationOptions = [], isLifetimeM
   const canCreateFamily = isLifetimeMember && !hasFamilyTimeline;
   const creationLimitReached = mode === "create" && !canCreatePersonal && !canCreateFamily;
   return <>
-    <button type="button" className={className} onClick={() => { setError(""); setOpen(true); }}>{children}</button>
+    <button type="button" className={className} onClick={openModal}>{children}</button>
     {open && createPortal(<div className="upload-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setOpen(false)}>
       <section className="upload-modal person-form-modal card" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <button type="button" className="modal-close" aria-label="关闭" onClick={() => setOpen(false)}>×</button>
@@ -75,9 +95,11 @@ export function PersonModal({ mode, person, associationOptions = [], isLifetimeM
           </fieldset> : <input type="hidden" name="type" value={person?.type} />}
           {mode === "create" && !canCreatePersonal && <p className="timeline-limit-notice">你的免费个人照见名额已使用。现有照见可以继续正常记录；如需创建更多个人照见或家庭照见，可<Link href="/membership">查看终身会员权益</Link>。</p>}
           <fieldset className="person-details-fieldset" disabled={creationLimitReached}>
-          <label className="cover-upload-field">
-            <span>选择照片 <small>（选填，推荐横向照片）</small></span>
-            <input name="cover" type="file" accept="image/jpeg,image/png,image/webp" disabled={pending} />
+          <label className={`cover-upload-field${coverPreview || person?.hasCover ? " cover-upload-selected" : ""}`}>
+            <input name="cover" type="file" accept="image/jpeg,image/png,image/webp" disabled={pending} onChange={previewCover} />
+            {coverPreview || (mode === "edit" && person?.hasCover)
+              ? <><img src={coverPreview ?? `/api/persons/${person!.id}/cover`} alt="照见封面预览" /><span className="cover-upload-overlay">点击更换封面</span><small>{coverName || "当前封面 · 选择新照片即可替换"}</small></>
+              : <span className="cover-upload-empty"><b aria-hidden="true">＋</b><strong>添加照见封面</strong><small>选填 · 推荐横向照片 · 支持 JPG、PNG、WebP</small></span>}
           </label>
           <label>{type === "family" ? "名称" : "姓名"}<input name="name" required maxLength={30} defaultValue={person?.name} autoFocus /></label>
           <label>昵称 <span>（选填）</span><input name="nickname" maxLength={30} defaultValue={person?.nickname} /></label>
