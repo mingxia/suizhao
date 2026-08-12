@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { resizeToWebp } from "@/lib/browser-image";
 import type { YearPhotoStage } from "@/db/schema/app";
@@ -9,6 +9,17 @@ export function PhotoUploadForm({ personId, type = "person", stage, age, replaci
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [preview, setPreview] = useState<{ url: string; name: string } | null>(null);
+
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview.url);
+  }, [preview]);
+
+  function previewPhoto(event: ChangeEvent<HTMLInputElement>) {
+    const photo = event.target.files?.[0];
+    setMessage("");
+    setPreview(photo ? { url: URL.createObjectURL(photo), name: photo.name } : null);
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,7 +61,12 @@ export function PhotoUploadForm({ personId, type = "person", stage, age, replaci
   }
 
   return <form onSubmit={submit} className="upload-form">
-    <label>选择照片<input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required disabled={busy} /></label>
+    <label className={`photo-picker${preview ? " photo-picker-selected" : ""}`}>
+      <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required disabled={busy} onChange={previewPhoto} />
+      {preview
+        ? <><img src={preview.url} alt="即将上传的照片预览" /><span className="photo-picker-overlay">点击更换照片</span><small>{preview.name}</small></>
+        : <span className="photo-picker-empty"><b aria-hidden="true">＋</b><strong>选择一张照片</strong><small>支持 JPG、PNG、WebP · 点击或拖入此处</small></span>}
+    </label>
     <label>拍摄日期（选填）<input name="takenAt" type="date" defaultValue={defaultTakenAt} disabled={busy} /></label>
     <label>{stage === "first_seen" ? "初见的故事（选填）" : "这一岁的故事（选填）"}<textarea name="note" maxLength={50} rows={3} defaultValue={defaultNote} disabled={busy} /></label>
     <div className="upload-optional-details">
