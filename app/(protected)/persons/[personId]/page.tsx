@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LocalizedText } from "../../../language-provider";
 import { and, asc, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { familyMembers, timelineInvitations, timelineMembers, timelines, user, witnesses, witnessVisits, yearPhotos } from "@/db/schema";
@@ -65,7 +66,10 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
                     : <span className="timeline-switcher-thumbnail" aria-hidden="true">{item.name.slice(0, 1)}</span>}
                   <span className="timeline-switcher-card-copy">
                     <strong>{item.name}</strong>
-                    <small>{item.birthday.getUTCFullYear()}年{item.type === "family" ? `成婚 · 携手${itemAge}年` : `出生 · ${itemAge}岁`}</small>
+                    <small><LocalizedText
+                      zh={`${item.birthday.getUTCFullYear()}年${item.type === "family" ? `成婚 · 携手${itemAge}年` : `出生 · ${itemAge}岁`}`}
+                      en={item.type === "family" ? `Married ${item.birthday.getUTCFullYear()} · ${itemAge} years together` : `Born ${item.birthday.getUTCFullYear()} · Age ${itemAge}`}
+                    /></small>
                   </span>
                   {item.id === personId && <span className="timeline-switcher-check" aria-label="当前照见">✓</span>}
                 </Link>;
@@ -74,8 +78,11 @@ export default async function PersonPage({ params }: { params: Promise<{ personI
             <PersonModal mode="create" associationOptions={ownedPersons.filter((item) => item.type === "person")} isLifetimeMember={session.user.membership === "lifetime"} hasPersonalTimeline={ownedPersons.some((item) => item.type === "person")} hasFamilyTimeline={ownedPersons.some((item) => item.type === "family")} className="timeline-switcher-create">＋ 创建新的照见</PersonModal>
           </div>
         </details>
-        <p>{person.birthday.getUTCFullYear()}年{person.type === "family" ? `成婚 · 携手${currentAge}年` : `出生 · ${currentAge}岁`}</p>
-        <span>已记录{photos.length}年</span>
+        <p><LocalizedText
+          zh={`${person.birthday.getUTCFullYear()}年${person.type === "family" ? `成婚 · 携手${currentAge}年` : `出生 · ${currentAge}岁`}`}
+          en={person.type === "family" ? `Married ${person.birthday.getUTCFullYear()} · ${currentAge} years together` : `Born ${person.birthday.getUTCFullYear()} · Age ${currentAge}`}
+        /></p>
+        <span><LocalizedText zh={`已记录${photos.length}年`} en={`${photos.length} ${photos.length === 1 ? "year" : "years"} recorded`} /></span>
         {person.type === "family" && linkedMembers.length > 0 && <nav className="family-member-links" aria-label="家庭关联人物">{linkedMembers.map((member) => <Link href={`/persons/${member.id}`} key={member.id}>@{member.name}</Link>)}</nav>}
       </div>
       <div className="person-intro">
