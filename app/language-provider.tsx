@@ -58,6 +58,12 @@ export function useLanguage() {
   return useContext(LanguageContext);
 }
 
+/** Use this for sentences containing values that split the Chinese copy across DOM nodes. */
+export function LocalizedText({ zh, en }: { zh: React.ReactNode; en: React.ReactNode }) {
+  const context = useLanguage();
+  return <>{context?.locale === "en" ? en : zh}</>;
+}
+
 export function LanguageSwitcher() {
   const context = useLanguage();
   if (!context) return null;
