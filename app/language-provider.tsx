@@ -48,7 +48,9 @@ export function LanguageProvider({ initialLocale, children }: { initialLocale: L
   function switchLocale(next: Locale) {
     document.cookie = `seeva-locale=${next}; path=/; max-age=31536000; samesite=lax`;
     setLocale(next);
-    if (next === "zh") window.location.reload();
+    // Metadata is rendered on the server from the locale cookie. Reload so the
+    // document head and visible content always switch languages together.
+    window.location.reload();
   }
 
   return <LanguageContext.Provider value={{ locale, switchLocale }}>{children}</LanguageContext.Provider>;

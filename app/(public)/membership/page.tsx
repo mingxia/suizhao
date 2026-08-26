@@ -7,8 +7,15 @@ import { Logo } from "../../logo";
 import { getSession } from "@/lib/session";
 import { ProtectedNavigation } from "../../(protected)/protected-navigation";
 import { LanguageSwitcher } from "../../language-provider";
+import { getLocalizedMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = { title: "会员方案｜照见", description: "选择适合你的照见会员方案。" };
+export function generateMetadata(): Promise<Metadata> {
+  return getLocalizedMetadata({
+    path: "/membership",
+    zh: { title: "会员方案｜照见", description: "选择适合你的照见会员方案。" },
+    en: { title: "Membership | Seeva", description: "Choose the Seeva membership plan that works for you." },
+  });
+}
 const Check = () => <span className="benefit-check" aria-hidden="true">✓</span>;
 
 async function getCurrentMembership(userId: string): Promise<Membership> {

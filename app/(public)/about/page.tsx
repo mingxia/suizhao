@@ -4,11 +4,21 @@ import { getSession } from "@/lib/session";
 import { Logo } from "../../logo";
 import { LanguageSwitcher } from "../../language-provider";
 import { ProtectedNavigation } from "../../(protected)/protected-navigation";
+import { getLocalizedMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "关于照见｜一个人和一个家的成长档案",
-  description: "了解照见的由来，以及我们如何通过每年一张照片，记录个人与家庭的成长。",
-};
+export function generateMetadata(): Promise<Metadata> {
+  return getLocalizedMetadata({
+    path: "/about",
+    zh: {
+      title: "关于照见｜一个人和一个家的成长档案",
+      description: "了解照见的由来，以及我们如何通过每年一张照片，记录个人与家庭的成长。",
+    },
+    en: {
+      title: "About Seeva | A growth archive for people and families",
+      description: "Learn why Seeva was created and how one photo each year preserves personal and family growth.",
+    },
+  });
+}
 
 export default async function AboutPage() {
   const session = await getSession();
