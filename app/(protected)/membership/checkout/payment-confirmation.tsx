@@ -3,13 +3,20 @@
 import Image from "next/image";
 import { useActionState, useState } from "react";
 import { submitLifetimeOrder } from "@/actions/order-actions";
+import { beginStripeLifetimeCheckout } from "@/actions/stripe-actions";
 
-export function PaymentConfirmation({ hasActiveOrder }: { hasActiveOrder: boolean }) {
+export function PaymentConfirmation({ hasActiveOrder, isEnglish }: { hasActiveOrder: boolean; isEnglish: boolean }) {
   const [confirmed, setConfirmed] = useState(hasActiveOrder);
   const [submitted, formAction, pending] = useActionState(async () => {
     await submitLifetimeOrder();
     return true;
   }, hasActiveOrder);
+
+  if (isEnglish) {
+    return <form action={beginStripeLifetimeCheckout}>
+      <button className="btn checkout-primary" type="submit" data-no-translate>Confirm details and continue to payment</button>
+    </form>;
+  }
 
   if (!confirmed) {
     return <button className="btn checkout-primary" type="button" onClick={() => setConfirmed(true)}>确认用户信息并继续付款</button>;

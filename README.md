@@ -182,3 +182,13 @@ pnpm test
 ```
 
 年龄计算测试覆盖生日当天、生日前一天、生日后一天、未满一岁、2月29日、跨年份与固定当前时间。数据库 Schema 保留 `year_photos_person_age_unique`，确保同一人物同一年龄只能保存一张照片。
+## Stripe 支付配置
+
+English-language lifetime membership purchases use Stripe Checkout. Configure these secrets in every deployed Cloudflare environment:
+
+```sh
+pnpm wrangler secret put STRIPE_SECRET_KEY
+pnpm wrangler secret put STRIPE_WEBHOOK_SECRET
+```
+
+In Stripe, register `https://weseeva.com/api/stripe/webhook` as a webhook endpoint and subscribe it to `checkout.session.completed`. The lifetime product and its one-time USD 49.99 price are created inline when checkout begins. Chinese-language purchases continue to use the existing WeChat QR and manual approval flow.

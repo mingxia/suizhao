@@ -23,7 +23,8 @@ export const orders = sqliteTable("orders", {
   status: text("status", { enum: ["pending", "reviewing", "approved", "rejected", "cancelled"] }).notNull().default("pending"),
   amountCents: integer("amount_cents").notNull(),
   currency: text("currency", { enum: ["CNY", "USD"] }).notNull().default("CNY"),
-  paymentMethod: text("payment_method", { enum: ["wechat_pay_qr"] }).notNull().default("wechat_pay_qr"),
+  paymentMethod: text("payment_method", { enum: ["wechat_pay_qr", "stripe_checkout"] }).notNull().default("wechat_pay_qr"),
+  paymentReference: text("payment_reference"),
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
   adminNote: text("admin_note"),
@@ -34,6 +35,7 @@ export const orders = sqliteTable("orders", {
 }, (table) => [
   index("orders_user_status_idx").on(table.userId, table.status),
   index("orders_status_created_idx").on(table.status, table.createdAt),
+  uniqueIndex("orders_payment_reference_unique").on(table.paymentReference),
 ]);
 
 export const familyMembers = sqliteTable("family_members", {

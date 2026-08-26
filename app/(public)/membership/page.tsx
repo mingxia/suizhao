@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { eq } from "drizzle-orm";
+import { cookies } from "next/headers";
 import { getDb } from "@/db";
 import { user, type Membership } from "@/db/schema";
 import { Logo } from "../../logo";
@@ -25,6 +26,7 @@ async function getCurrentMembership(userId: string): Promise<Membership> {
 }
 
 export default async function MembershipPage() {
+  const isEnglish = (await cookies()).get("seeva-locale")?.value === "en";
   const session = await getSession();
   const membership = session ? await getCurrentMembership(session.user.id) : null;
   const isFreeMember = membership === "free";
@@ -49,6 +51,8 @@ export default async function MembershipPage() {
         {isLifetimeMember ? <span className="btn plan-button plan-button-disabled" aria-disabled="true">您已是终身会员</span> : <Link className="btn plan-button" href={session ? "/membership/checkout" : "/register"}>{session ? "立即升级为终身会员" : "先注册体验"}</Link>}
       </article>
     </section>
-    <p className="membership-footnote">{session ? "扫码付款后提交订单 · 管理员核实后开通终身会员" : "终身会员支持微信扫码付款 · 也可以先免费开始记录"}</p>
+    <p className="membership-footnote" data-no-translate>{isEnglish
+      ? (session ? "Secure payment by Stripe · Lifetime access activates automatically" : "Lifetime membership supports secure Stripe payment · Or start recording for free")
+      : (session ? "扫码付款后提交订单 · 管理员核实后开通终身会员" : "终身会员支持微信扫码付款 · 也可以先免费开始记录")}</p>
   </main>;
 }
