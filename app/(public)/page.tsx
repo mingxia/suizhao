@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "../logo";
 import { getSession } from "@/lib/session";
-import { LanguageSwitcher } from "../language-provider";
+import { LanguageSwitcher, LocalizedText } from "../language-provider";
 import { ProtectedNavigation } from "../(protected)/protected-navigation";
 import { HeroAlbumSlider } from "./hero-album-slider";
 
@@ -34,10 +34,10 @@ export default async function Home() {
 
       <section className="hero-panel">
         <div className="hero-copy">
-          <p className="eyebrow">个人与家庭的成长档案</p>
-          <h1>每岁一张<br />照见成长</h1>
+          <p className="eyebrow"><LocalizedText zh="个人与家庭的成长档案" en="A life and family growth archive" /></p>
+          <h1><LocalizedText zh={<>每岁一张<br />照见成长</>} en={<>One photo a year.<br />See a life unfold.</>} /></h1>
           <span className="title-rule" />
-          <p className="hero-description">一年只留一张照片，<br />让家人共同见证一个人的成长。</p>
+          <p className="hero-description"><LocalizedText zh={<>一年只留一张照片，<br />让家人共同见证一个人的成长。</>} en="Keep one photo from each year, and let your family witness a lifetime unfolding." /></p>
           <div className="hero-actions">
             <Link className="btn btn-primary" href="/register">开始记录</Link>
             <Link className="btn btn-secondary" href="/about">了解照见 <span aria-hidden="true">›</span></Link>
