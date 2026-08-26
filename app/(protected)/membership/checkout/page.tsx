@@ -1,13 +1,13 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { getDb } from "@/db";
 import { orders, user } from "@/db/schema";
 import { requireSession } from "@/lib/session";
 import { PaymentConfirmation } from "./payment-confirmation";
+import { getRequestLocale } from "@/lib/locale";
 
 export default async function LifetimeCheckoutPage() {
-  const isEnglish = (await cookies()).get("seeva-locale")?.value === "en";
+  const isEnglish = await getRequestLocale() === "en";
   const session = await requireSession();
   const db = await getDb();
   const [account] = await db.select({ name: user.name, email: user.email, membership: user.membership }).from(user).where(eq(user.id, session.user.id)).limit(1);

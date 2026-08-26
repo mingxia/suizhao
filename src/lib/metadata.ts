@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { getRequestLocale } from "./locale";
 
 type LocalizedMetadata = {
   zh: { title: string; description: string };
@@ -8,7 +8,7 @@ type LocalizedMetadata = {
 };
 
 export async function getLocalizedMetadata({ zh, en, path }: LocalizedMetadata): Promise<Metadata> {
-  const english = (await cookies()).get("seeva-locale")?.value === "en";
+  const english = await getRequestLocale() === "en";
   const { title, description } = english ? en : zh;
   const locale = english ? "en_US" : "zh_CN";
 
