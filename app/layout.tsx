@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SiteFooter } from "./site-footer";
-import { cookies } from "next/headers";
 import { LanguageProvider } from "./language-provider";
+import { getRequestLocale } from "@/lib/locale";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -20,7 +20,7 @@ const sharedMetadata: Metadata = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const english = (await cookies()).get("seeva-locale")?.value === "en";
+  const english = await getRequestLocale() === "en";
   const title = english ? "Seeva | One life recorded, witnessed by family" : "照见｜一个人记录，一家人见证";
   const description = english ? "One photo each year. See growth come to light." : "每岁一张，照见成长。";
   const shareImage = {
@@ -53,6 +53,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = (await cookies()).get("seeva-locale")?.value === "en" ? "en" : "zh";
+  const locale = await getRequestLocale();
   return <html lang={locale === "en" ? "en" : "zh-CN"} data-locale={locale}><body><LanguageProvider initialLocale={locale}><div className="site-content">{children}</div><SiteFooter /></LanguageProvider></body></html>;
 }

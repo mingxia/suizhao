@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
 import { getDb } from "@/db";
 import { user, type Membership } from "@/db/schema";
 import { Logo } from "../../logo";
@@ -9,6 +8,7 @@ import { getSession } from "@/lib/session";
 import { ProtectedNavigation } from "../../(protected)/protected-navigation";
 import { LanguageSwitcher } from "../../language-provider";
 import { getLocalizedMetadata } from "@/lib/metadata";
+import { getRequestLocale } from "@/lib/locale";
 
 export function generateMetadata(): Promise<Metadata> {
   return getLocalizedMetadata({
@@ -26,7 +26,7 @@ async function getCurrentMembership(userId: string): Promise<Membership> {
 }
 
 export default async function MembershipPage() {
-  const isEnglish = (await cookies()).get("seeva-locale")?.value === "en";
+  const isEnglish = await getRequestLocale() === "en";
   const session = await getSession();
   const membership = session ? await getCurrentMembership(session.user.id) : null;
   const isFreeMember = membership === "free";
