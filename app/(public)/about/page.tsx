@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { Logo } from "../../logo";
-import { LanguageSwitcher } from "../../language-provider";
+import { LanguageSwitcher, LocalizedText } from "../../language-provider";
 import { ProtectedNavigation } from "../../(protected)/protected-navigation";
 import { getLocalizedMetadata } from "@/lib/metadata";
 
@@ -41,14 +41,14 @@ export default async function AboutPage() {
       <article className="about-article">
         <header className="about-hero">
           <p className="eyebrow">ABOUT SEEVA</p>
-          <h1>关于照见</h1>
-          <p>一个人和一个家的成长档案</p>
+          <h1><LocalizedText zh="关于照见" en="About Seeva" /></h1>
+          <p><LocalizedText zh="一个人和一个家的成长档案" en="A growth archive for every life and family" /></p>
         </header>
 
         <section className="about-intro">
-          <p>照见是一款极简的个人与家庭成长记录工具。</p>
-          <p>通过年度照片时间线，帮助用户记录个人成长、家庭变化、家人见证与共同创作。</p>
-          <strong>让一个人记录，让一家人见证。</strong>
+          <p><LocalizedText zh="照见是一款极简的个人与家庭成长记录工具。" en="Seeva is a quiet, simple way to preserve how people and families grow." /></p>
+          <p><LocalizedText zh="通过年度照片时间线，帮助用户记录个人成长、家庭变化、家人见证与共同创作。" en="An annual photo timeline brings personal milestones, family changes, shared memories, and stories created together into one place." /></p>
+          <strong><LocalizedText zh="让一个人记录，让一家人见证。" en="One person records. A whole family witnesses." /></strong>
         </section>
 
         <section>
@@ -63,7 +63,7 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <h2>两种照见</h2>
+          <h2><LocalizedText zh="两种照见" en="Two ways to preserve a story" /></h2>
           <div className="about-types">
             <article>
               <span>01</span>
@@ -83,8 +83,8 @@ export default async function AboutPage() {
         </section>
 
         <section className="about-seeva">
-          <h2>关于 Seeva</h2>
-          <p>照见的英文名字是 <strong data-no-translate>Seeva</strong>，它由 <strong data-no-translate>See + Viva</strong> 组成。</p>
+          <h2><LocalizedText zh="关于 Seeva" en="The name Seeva" /></h2>
+          <p><LocalizedText zh={<>照见的英文名字是 <strong data-no-translate>Seeva</strong>，它由 <strong data-no-translate>See + Viva</strong> 组成。</>} en={<>The name <strong>Seeva</strong> brings together <strong>See</strong> and <strong>Viva</strong>.</>} /></p>
           <dl>
             <div><dt data-no-translate>See</dt><dd>看见。</dd></div>
             <div><dt data-no-translate>Viva</dt><dd>生命、活力。</dd></div>
@@ -96,8 +96,8 @@ export default async function AboutPage() {
         </section>
 
         <section>
-          <h2>关于我们</h2>
-          <p>照见诞生于一个非常简单的想法：时间过得太快。</p>
+          <h2><LocalizedText zh="关于我们" en="Why we built Seeva" /></h2>
+          <p><LocalizedText zh="照见诞生于一个非常简单的想法：时间过得太快。" en="Seeva began with one simple realization: life moves quickly." /></p>
           <p>孩子一年一年长大，家庭一天一天变化。如果没有记录，很多珍贵的瞬间最终会被遗忘。</p>
           <p>于是，我们创造了照见。从一个想法，到第一个版本上线，只用了十天。</p>
           <p>它不是为了记录更多照片，而是希望帮助每个人留下那些真正值得记住的时刻。</p>
