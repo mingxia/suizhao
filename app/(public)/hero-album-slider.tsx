@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "../language-provider";
 
 const personalYears = Array.from({ length: 5 }, (_, index) => ({
   label: `${index + 1}岁`,
@@ -17,6 +18,7 @@ const familyYears = [
 ];
 
 export function HeroAlbumSlider() {
+  const isEnglish = useLanguage()?.locale === "en";
   const [active, setActive] = useState<"person" | "family">("person");
   const isFamily = active === "family";
   const items = isFamily ? familyYears : personalYears;
@@ -25,8 +27,8 @@ export function HeroAlbumSlider() {
   return (
     <div className="album-showcase" id="example">
       <div className="album-switch" role="tablist" aria-label="照见示例类型">
-        <button role="tab" aria-selected={!isFamily} onClick={() => setActive("person")}>个人照见</button>
-        <button role="tab" aria-selected={isFamily} onClick={() => setActive("family")}>家庭照见</button>
+        <button role="tab" aria-selected={!isFamily} onClick={() => setActive("person")}>{isEnglish ? "Personal" : "个人照见"}</button>
+        <button role="tab" aria-selected={isFamily} onClick={() => setActive("family")}>{isEnglish ? "Family" : "家庭照见"}</button>
       </div>
       <div className="album-scene">
         <div className="album-frame">
@@ -45,8 +47,8 @@ export function HeroAlbumSlider() {
               <div className="album-memories">
                 <div className="album-title">
                   <div>
-                    <h2>{isFamily ? "小树家的故事" : "小树成长记"}</h2>
-                    <p><strong>{cover.label}</strong><i /> <time>{cover.year}</time></p>
+                    <h2>{isEnglish ? isFamily ? "The Little Tree Family" : "Little Tree, Year by Year" : isFamily ? "小树家的故事" : "小树成长记"}</h2>
+                    <p><strong>{isEnglish ? isFamily ? cover.label === "结婚" ? "Wedding" : `Year ${cover.label.replace("年", "")}` : `Age ${cover.label.replace("岁", "")}` : cover.label}</strong><i /> <time>{cover.year}</time></p>
                   </div>
                   <span>{isFamily ? "家庭照见" : "个人照见"}</span>
                 </div>
@@ -54,12 +56,12 @@ export function HeroAlbumSlider() {
                   {memories.map(({ label, year, image }, index) => (
                     <article className="year-card" key={`${active}-${label}`}>
                       <div className={`portrait${isFamily ? " family-portrait" : ""}`} role="img" aria-label={isFamily ? familyYears[index + 1].alt : `${label}成长照片`} style={{ backgroundImage: `url(${image})` }} />
-                      <div className="year-card-label"><strong>{label}</strong><small>{year}</small></div>
+                      <div className="year-card-label"><strong>{isEnglish ? isFamily ? `Year ${label.replace("年", "")}` : `Age ${label.replace("岁", "")}` : label}</strong><small>{year}</small></div>
                     </article>
                   ))}
                   <article className="year-card pending">
                     <div className="add-photo"><b>＋</b><span>待记录</span></div>
-                    <div className="year-card-label"><strong>{isFamily ? "明年" : "6岁"}</strong><small>{new Date().getFullYear()}</small></div>
+                    <div className="year-card-label"><strong>{isEnglish ? isFamily ? "Next year" : "Age 6" : isFamily ? "明年" : "6岁"}</strong><small>{new Date().getFullYear()}</small></div>
                   </article>
                 </div>
               </div>
