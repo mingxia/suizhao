@@ -63,12 +63,11 @@ export function LanguageSwitcher() {
   if (!context) return null;
   const { locale, switchLocale } = context;
 
-  const nextLocale = locale === "zh" ? "en" : "zh";
-  const label = locale === "zh" ? "EN" : "中文";
-
   return (
     <div className="language-switcher" data-no-translate aria-label="语言 / Language">
-      <button onClick={() => switchLocale(nextLocale)} type="button">{label}</button>
+      <button className={locale === "zh" ? "active" : ""} aria-pressed={locale === "zh"} aria-label="切换为中文" onClick={() => locale !== "zh" && switchLocale("zh")} type="button">中</button>
+      <span aria-hidden="true" />
+      <button className={locale === "en" ? "active" : ""} aria-pressed={locale === "en"} aria-label="Switch to English" onClick={() => locale !== "en" && switchLocale("en")} type="button">EN</button>
     </div>
   );
 }
