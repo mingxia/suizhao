@@ -1,18 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { englishTranslations } from "@/lib/english-translations";
+import { translateToEnglish } from "@/lib/english-translations";
 
 type Locale = "zh" | "en";
 const LanguageContext = createContext<{ locale: Locale; switchLocale: (next: Locale) => void } | null>(null);
-const entries = Object.entries(englishTranslations).sort(([a], [b]) => b.length - a.length);
-
-function translate(value: string) {
-  let translated = value;
-  for (const [source, target] of entries) translated = translated.replaceAll(source, target);
-  return translated;
-}
-
 function translateDocument() {
   const root = document.body;
   if (!root) return;
@@ -21,13 +13,13 @@ function translateDocument() {
   while ((node = walker.nextNode())) {
     if (node.parentElement?.closest("[data-no-translate]")) continue;
     const value = node.nodeValue ?? "";
-    const translated = translate(value);
+    const translated = translateToEnglish(value);
     if (translated !== value) node.nodeValue = translated;
   }
   root.querySelectorAll<HTMLElement>("[aria-label], [placeholder], [title], [alt]").forEach((element) => {
     for (const attribute of ["aria-label", "placeholder", "title", "alt"]) {
       const value = element.getAttribute(attribute);
-      if (value) element.setAttribute(attribute, translate(value));
+      if (value) element.setAttribute(attribute, translateToEnglish(value));
     }
   });
 }

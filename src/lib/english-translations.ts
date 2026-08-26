@@ -442,3 +442,20 @@ export const englishTranslations: Record<string, string> = {
   "立即升级为终身会员": "Upgrade to lifetime now",
   "终身会员购买功能即将开放 · 免费会员可先提交升级意向": "Lifetime purchase is coming soon · Free members can submit upgrade interest first",
 };
+
+const englishTranslationEntries = Object.entries(englishTranslations).sort(([a], [b]) => b.length - a.length);
+
+/**
+ * Translate legacy Chinese UI copy that has not yet moved to locale-aware
+ * components. Numeric age labels need a boundary check: without it, the
+ * translation for `1岁` also matches the tail of `11岁` and produces
+ * strings such as `1Age 1`.
+ */
+export function translateToEnglish(value: string) {
+  let translated = value.replace(/(\d+)岁/g, "Age $1");
+  for (const [source, target] of englishTranslationEntries) {
+    if (/^\d+岁$/.test(source)) continue;
+    translated = translated.replaceAll(source, target);
+  }
+  return translated;
+}
