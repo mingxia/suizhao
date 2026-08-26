@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { YearPhotoStage } from "@/db/schema/app";
 import { PhotoUploadForm } from "./photos/[age]/photo-upload-form";
+import { LocalizedText, useLanguage } from "../../../language-provider";
 
 type YearCard = { year: number; photoId: string | null; note: string | null; takenAt: string | null; locationName: string | null; yearHighlight: string | null } & (
   | { stage: "first_seen"; age: null }
@@ -11,6 +12,7 @@ type YearCard = { year: number; photoId: string | null; note: string | null; tak
 );
 
 export function PersonYears({ personId, personName, type, cards, nextYear, canEdit = true }: { personId: string; personName: string; type: "person" | "family"; cards: YearCard[]; nextYear: number; canEdit?: boolean }) {
+  const locale = useLanguage()?.locale ?? "zh";
   const [viewCard, setViewCard] = useState<YearCard | null>(null);
   const [uploadCard, setUploadCard] = useState<YearCard | null>(null);
   const modalOpen = viewCard !== null || uploadCard !== null;
@@ -66,7 +68,9 @@ export function PersonYears({ personId, personName, type, cards, nextYear, canEd
     <section className="years-grid">
       {cards.map((card) => {
         const key = card.stage === "first_seen" ? "first_seen" : `age-${card.age}`;
-        const description = type === "family" ? `${personName}${card.stage === "first_seen" ? "的结婚照" : `成婚第${card.age}年的全家福`}` : card.stage === "first_seen" ? `${personName}的初见照片` : `${personName}${card.age}岁的照片`;
+        const description = locale === "en"
+          ? type === "family" ? `${personName}${card.stage === "first_seen" ? "'s wedding photo" : `, year ${card.age} of marriage`}` : `${personName}${card.stage === "first_seen" ? "'s first photo" : ` at age ${card.age}`}`
+          : type === "family" ? `${personName}${card.stage === "first_seen" ? "的结婚照" : `成婚第${card.age}年的全家福`}` : card.stage === "first_seen" ? `${personName}的初见照片` : `${personName}${card.age}岁的照片`;
         return card.photoId
           ? <Link key={key} href={`/persons/${personId}/photos/${pathFor(card)}`} className="year-photo-card card" onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); openViewer(card); }}>
               <img src={`/api/photos/${card.photoId}/file?variant=thumbnail`} alt={description} loading="lazy" />
@@ -77,7 +81,7 @@ export function PersonYears({ personId, personName, type, cards, nextYear, canEd
               <YearLabel stage={card.stage} age={card.age} year={card.year} type={type} />
             </button> : null;
       })}
-      <div className="year-photo-card year-locked-card card"><div><span aria-hidden="true">♙</span><strong>{nextYear}年</strong><small>待解锁</small></div></div>
+      <div className="year-photo-card year-locked-card card"><div><span aria-hidden="true">♙</span><strong><LocalizedText zh={`${nextYear}年`} en={String(nextYear)} /></strong><small>待解锁</small></div></div>
     </section>
 
     {viewCard?.photoId && <div className="photo-viewer-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && closeViewer()}>
@@ -106,5 +110,7 @@ export function PersonYears({ personId, personName, type, cards, nextYear, canEd
 }
 
 function YearLabel({ stage, age, year, type }: { stage: YearPhotoStage; age: number | null; year: number; type: "person" | "family" }) {
-  return <p className="year-label"><strong>{type === "family" ? stage === "first_seen" ? "结婚照" : `第${age}年` : stage === "first_seen" ? "初见" : `${age}岁`}</strong><span>/</span><time>{year}</time></p>;
+  const zh = type === "family" ? stage === "first_seen" ? "结婚照" : `第${age}年` : stage === "first_seen" ? "初见" : `${age}岁`;
+  const en = type === "family" ? stage === "first_seen" ? "Wedding" : `Year ${age}` : stage === "first_seen" ? "First photo" : `Age ${age}`;
+  return <p className="year-label"><strong><LocalizedText zh={zh} en={en} /></strong><span>/</span><time>{year}</time></p>;
 }
